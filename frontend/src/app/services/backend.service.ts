@@ -19,8 +19,7 @@ export class BackendService {
      * Note that this method will add a '/' at the end of the url if it does not exist.
      */
     async get(objectUrl: string): Promise<any> {
-        // const baseUrl = await this.getApiUrl();
-        const baseUrl = 'http://localhost:8000/api/';
+        const baseUrl = await this.getApiUrl();
         if (!objectUrl.endsWith('/')) {
             objectUrl = `${objectUrl}/`;
         }

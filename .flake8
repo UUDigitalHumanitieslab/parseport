@@ -1,0 +1,7 @@
+[flake8]
+exclude = .git,__pycache__,**/*.py
+per-file-ignores =
+    ./production.py: F401, F403
+    ./collect.py: F401, F403, E402
+    ./bootstrap.py: C901, E701
+    ./glue.py: F403, F405, E402

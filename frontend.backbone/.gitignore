@@ -1,0 +1,15 @@
+# Distribution / packaging
+dist/
+
+# Unit test / coverage reports
+.coverage
+.coverage.*
+.cache
+coverage.xml
+*.cover
+
+# Node
+node_modules/
+
+# Project-specific
+*-template.ts

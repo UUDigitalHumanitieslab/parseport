@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ParsePort</title>
+    <link rel=stylesheet href="{{{staticRoot}}}{{{cssBundleName}}}">
+    <link rel=icon type="image/png" sizes="32x32" href="{{{staticRoot}}}image/favicon32x32.png">
+    <link rel=icon type="image/png" sizes="16x16" href="{{{staticRoot}}}image/favicon16x16.png">
+</head><body>
+    <main></main>
+    {{#libs}}<script src="{{{@root.nodeRoot}}}{{{path}}}"></script>
+    {{/libs}}<script src="{{{staticRoot}}}{{{jsBundleName}}}"></script>
+</body></html>

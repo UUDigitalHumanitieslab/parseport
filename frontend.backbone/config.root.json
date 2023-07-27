@@ -1,6 +1,0 @@
-{
-  "baseUrl": "/",
-  "staticRoot": "/static/",
-  "nodeRoot": "/static/",
-  "apiRoot": "/api/"
-}

@@ -2,7 +2,7 @@
 
 [![Actions Status](https://github.com/UUDigitalHumanitieslab/parseport/workflows/Unit%20tests/badge.svg)](https://github.com/UUDigitalHumanitieslab/parseport/actions)
 
-Dutch sentence parser for Spindle + Æthel (and maybe others in the future).
+Dutch sentence parser for Spindle + Æthel (and maybe others in the future)...
 
 
 ## Before you start

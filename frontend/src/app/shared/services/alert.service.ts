@@ -14,5 +14,4 @@ export interface AlertInfo {
 export class AlertService {
   alert$ = new Subject<AlertInfo>();
 
-  constructor() {}
 }

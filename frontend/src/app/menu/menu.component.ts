@@ -1,5 +1,5 @@
 import { Component, NgZone } from '@angular/core';
-import { animations, showState } from '../animations';
+import { animations, ShowState } from '../animations';
 
 @Component({
     animations,
@@ -8,13 +8,14 @@ import { animations, showState } from '../animations';
     styleUrls: ['./menu.component.scss']
 })
 export class MenuComponent {
-    burgerShow: showState = 'hide';
+    burgerShow: ShowState = 'hide';
     burgerActive = false;
 
     constructor(private ngZone: NgZone) { }
 
     toggleBurger() {
         if (!this.burgerActive) {
+            console.log('Burger is active');
             // make it active to make it visible (add a class to
             // override it being hidden for smaller screens)
             this.burgerActive = true;

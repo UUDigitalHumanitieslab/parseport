@@ -1,6 +1,6 @@
 import { trigger, style, transition, animate, state } from '@angular/animations';
 
-export type showState = 'hide' | 'show';
+export type ShowState = 'hide' | 'show';
 
 export const animations = [
     trigger('slideInOut', [

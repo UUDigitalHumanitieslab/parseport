@@ -1,9 +1,10 @@
 import { Directive, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
-import { AlertComponent, AlertType } from '../components/alert/alert.component';
+import { AlertComponent } from '../components/alert/alert.component';
 import { AlertService, AlertInfo } from '../services/alert.service';
 import { Subject, takeUntil } from 'rxjs';
 
 @Directive({
+    // eslint-disable-next-line @angular-eslint/directive-selector
     selector: '[alertContainer]'
 })
 export class AlertContainerDirective implements OnInit, OnDestroy {

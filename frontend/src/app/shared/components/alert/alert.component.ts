@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Output } from '@angular/core';
 import { AnimationEvent } from '@angular/animations';
 import { animations } from 'src/app/animations';
 
@@ -22,7 +22,7 @@ const ALERT_TYPE_CLASSES: { [key in AlertType]: `is-${key}` } = {
     styleUrls: ['./alert.component.scss'],
     animations: animations
 })
-export class AlertComponent {
+export class AlertComponent implements AfterViewInit {
     @Output() destroyMe = new EventEmitter<void>();
     message = '';
     type = AlertType.INFO;

@@ -15,7 +15,6 @@ export class MenuComponent {
 
     toggleBurger() {
         if (!this.burgerActive) {
-            console.log('Burger is active');
             // make it active to make it visible (add a class to
             // override it being hidden for smaller screens)
             this.burgerActive = true;

@@ -9,13 +9,21 @@ import { AppRoutingModule } from './app-routing.module';
 import { FooterComponent } from './footer/footer.component';
 import { MenuComponent } from './menu/menu.component';
 import { HomeComponent } from './home/home.component';
+import { SpindleComponent } from './spindle/spindle.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { AlertComponent } from './shared/components/alert/alert.component';
+import { AlertContainerDirective } from './shared/directives/alert-container.directive';
+import { AlertService } from './shared/services/alert.service';
 
 @NgModule({
     declarations: [
+        AlertComponent,
+        AlertContainerDirective,
         AppComponent,
         FooterComponent,
+        HomeComponent,
         MenuComponent,
-        HomeComponent
+        SpindleComponent,
     ],
     imports: [
         AppRoutingModule,
@@ -25,9 +33,10 @@ import { HomeComponent } from './home/home.component';
         HttpClientXsrfModule.withOptions({
             cookieName: 'csrftoken',
             headerName: 'X-CSRFToken'
-        })
+        }),
+        ReactiveFormsModule,
     ],
-    providers: [],
+    providers: [AlertService],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

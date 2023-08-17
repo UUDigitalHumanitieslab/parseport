@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AlertComponent } from './alert.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('AlertComponent', () => {
   let component: AlertComponent;
@@ -8,6 +9,7 @@ describe('AlertComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [BrowserAnimationsModule],
       declarations: [ AlertComponent ]
     })
     .compileComponents();

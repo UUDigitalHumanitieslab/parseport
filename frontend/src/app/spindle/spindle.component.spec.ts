@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SpindleComponent } from './spindle.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { ReactiveFormsModule } from '@angular/forms';
 
 describe('SpindleComponent', () => {
   let component: SpindleComponent;
@@ -8,7 +10,8 @@ describe('SpindleComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SpindleComponent ]
+      imports: [HttpClientTestingModule, ReactiveFormsModule],
+      declarations: [SpindleComponent],
     })
     .compileComponents();
 

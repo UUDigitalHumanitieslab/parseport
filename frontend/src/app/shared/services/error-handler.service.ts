@@ -4,13 +4,13 @@ import { AlertType } from '../components/alert/alert.component';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Injectable({
-    providedIn: 'root'   
+    providedIn: 'root'
 })
 export class ErrorHandlerService implements ErrorHandler {
 
     constructor(private alertService: AlertService) { }
 
-    handleError(error: HttpErrorResponse, message?: string): void {
+    handleHttpError(error: HttpErrorResponse, message?: string): void {
         if (error.status === 0) {
             // Client-side or network error
             console.error('An error occurred:', error.error);
@@ -23,7 +23,14 @@ export class ErrorHandlerService implements ErrorHandler {
 
         this.alertService.alert$.next({
             type: AlertType.DANGER,
-            message: errorMessage
+            message: errorMessage,
+        });
+    }
+
+    handleError(errorMessage: string): void {
+        this.alertService.alert$.next({
+            type: AlertType.DANGER,
+            message: errorMessage,
         });
     }
 }

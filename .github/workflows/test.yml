@@ -82,4 +82,4 @@ jobs:
         find static
         yarn start-back-p &
         chromedriver --version
-        yarn test
+        yarn test-back && yarn test-front

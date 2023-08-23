@@ -27,7 +27,7 @@ export class SpindleComponent implements OnInit, OnDestroy {
           {} // Options with headers, credentials etc. go here.
         )),
         catchError(error => {
-          this.errorHandler.handleError(error, $localize`An error occurred while parsing your data.`);
+          this.errorHandler.handleHttpError(error, $localize`An error occurred while parsing your data.`);
           return EMPTY;
         }),
         takeUntil(this.destroy$)

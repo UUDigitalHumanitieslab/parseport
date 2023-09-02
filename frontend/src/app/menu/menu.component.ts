@@ -1,5 +1,5 @@
 import { Component, NgZone } from '@angular/core';
-import { animations, showState } from '../animations';
+import { animations, ShowState } from '../animations';
 
 @Component({
     animations,
@@ -8,7 +8,7 @@ import { animations, showState } from '../animations';
     styleUrls: ['./menu.component.scss']
 })
 export class MenuComponent {
-    burgerShow: showState = 'hide';
+    burgerShow: ShowState = 'hide';
     burgerActive = false;
 
     constructor(private ngZone: NgZone) { }

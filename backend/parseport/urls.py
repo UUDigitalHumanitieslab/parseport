@@ -20,6 +20,8 @@ from django.views.generic import RedirectView
 
 from rest_framework import routers
 
+from spindle.views import SpindleView
+
 from .index import index
 from .proxy_frontend import proxy_frontend
 
@@ -40,6 +42,7 @@ urlpatterns = [
     path('api-auth', RedirectView.as_view(url='/api-auth/', permanent=True)),
     path('admin/', admin.site.urls),
     path('api/', include(api_router.urls)),
+    path('api/spindle/<str:mode>', SpindleView.as_view(), name='spindle'),
     path('api-auth/', include(
         'rest_framework.urls',
         namespace='rest_framework',

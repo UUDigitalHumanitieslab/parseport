@@ -1,0 +1,44 @@
+<h2 class="title" i18n>Spindle</h2>
+
+<p class="field" i18n>
+    Welcome to Spindle. Enter a sentence in the input field below to start
+    parsing.
+</p>
+
+<form class="form">
+    <div class="field">
+        <label for="spindle-input" class="label">Input:</label>
+        <input
+            id="spindle-input"
+            class="input"
+            type="text"
+            [formControl]="spindleInput"
+            placeholder="Enter a sentence..."
+            placeholder-i18n
+        />
+    </div>
+</form>
+
+<div class="button-container buttons">
+    <button class="button latex" (click)="export('tex')">
+        <img class="logo" src="assets/latex-logo.svg" alt="latex-logo" />
+        <span i18n>Export to LaTeX</span>
+    </button>
+    <button class="button pdf" (click)="export('pdf')">
+        <img class="logo" src="assets/pdf-logo.svg" alt="pdf-logo" />
+        <span i18n>Export to PDF</span>
+    </button>
+    <button class="button overleaf" (click)="export('overleaf')">
+        <img class="logo" src="assets/overleaf-logo.svg" alt="overleaf-logo" />
+        <span i18n>Open in Overleaf</span>
+    </button>
+</div>
+
+<div class="output-container" *ngIf="texOutput">
+    <pre
+        name="tex-output"
+        class="is-family-code"
+        [innerText]="texOutput"
+        disabled
+    ></pre>
+</div>

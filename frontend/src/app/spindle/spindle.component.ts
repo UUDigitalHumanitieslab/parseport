@@ -3,6 +3,8 @@ import { FormControl, Validators } from "@angular/forms";
 import { Subject, takeUntil } from "rxjs";
 import { ApiService, SpindleMode } from "../shared/services/api.service";
 import { ErrorHandlerService } from "../shared/services/error-handler.service";
+import { AlertService } from "../shared/services/alert.service";
+import { AlertType } from "../shared/components/alert/alert.component";
 
 @Component({
     selector: "dh-spindle",
@@ -14,10 +16,12 @@ export class SpindleComponent implements OnInit, OnDestroy {
         validators: [Validators.required],
     });
     texOutput: string | null = null;
+    loading: SpindleMode | null = null;
     private destroy$ = new Subject<void>();
 
     constructor(
         private apiService: ApiService,
+        private alertService: AlertService,
         private errorHandler: ErrorHandlerService,
     ) {}
 
@@ -26,8 +30,10 @@ export class SpindleComponent implements OnInit, OnDestroy {
             .spindleResult$()
             .pipe(takeUntil(this.destroy$))
             .subscribe((response) => {
-                if (response.errors && response.errors.length > 0) {
-                    this.errorHandler.handleError(response.errors.join(", "));
+                this.loading = null;
+                if (response.error) {
+                    this.errorHandler.handleSpindleError(response.error);
+                    return;
                 }
                 if (response.tex) {
                     this.texOutput = response.tex;
@@ -49,7 +55,37 @@ export class SpindleComponent implements OnInit, OnDestroy {
         if (this.spindleInput.invalid || !userInput) {
             return;
         }
+        this.loading = mode;
+        this.texOutput = null;
         this.apiService.spindleInput$.next({ mode, sentence: userInput });
+    }
+
+    copyToClipboard(): void {
+        if (!this.texOutput) {
+            this.alertService.alert$.next({
+                message: $localize`Failed to copy to clipboard.`,
+                type: AlertType.DANGER
+            })
+            return;
+        }
+        navigator.clipboard.writeText(this.texOutput)
+            .then(() => {
+                this.alertService.alert$.next({
+                    message: $localize`Copied to clipboard.`,
+                    type: AlertType.SUCCESS
+                })
+            })
+            .catch(() => {
+                this.alertService.alert$.next({
+                    message: $localize`Failed to copy to clipboard.`,
+                    type: AlertType.DANGER
+                })
+            });
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
     }
 
     /**
@@ -68,10 +104,5 @@ export class SpindleComponent implements OnInit, OnDestroy {
         downloadLink.download = fileName;
         downloadLink.click();
         downloadLink.remove();
-    }
-
-    ngOnDestroy(): void {
-        this.destroy$.next();
-        this.destroy$.complete();
     }
 }

@@ -1,7 +1,7 @@
 <h2 class="title" i18n>Spindle</h2>
 
 <p class="field" i18n>
-    Welcome to Spindle. Enter a sentence in the input field below to start
+    Welcome to Spindle. Enter a Dutch sentence in the input field below to start
     parsing.
 </p>
 
@@ -11,30 +11,69 @@
         <input
             id="spindle-input"
             class="input"
+            [class.is-danger]="spindleInput.touched && spindleInput.invalid"
             type="text"
             [formControl]="spindleInput"
+            (keydown.enter)="$event.preventDefault()"
             placeholder="Enter a sentence..."
             placeholder-i18n
         />
+        <p
+            *ngIf="spindleInput.touched && spindleInput.invalid"
+            class="help is-danger"
+            i18n
+        >
+            This field is required.
+        </p>
     </div>
 </form>
 
 <div class="button-container buttons">
-    <button class="button latex" (click)="export('tex')">
-        <img class="logo" src="assets/latex-logo.svg" alt="latex-logo" />
-        <span i18n>Export to LaTeX</span>
+    <button
+        class="button latex"
+        [class.is-loading]="loading === 'tex'"
+        (click)="export('tex')"
+        type="button"
+    >
+        <span class="icon">
+            <img src="assets/latex-logo.svg" alt="latex-logo" />
+        </span>
+        <span class="button-text" [class.invisible]="loading === 'tex'" i18n>Export to LaTeX</span>
     </button>
-    <button class="button pdf" (click)="export('pdf')">
-        <img class="logo" src="assets/pdf-logo.svg" alt="pdf-logo" />
-        <span i18n>Export to PDF</span>
+    <button
+        class="button pdf"
+        [class.is-loading]="loading === 'pdf'"
+        (click)="export('pdf')"
+        type="button"
+    >
+        <span class="icon">
+            <img src="assets/pdf-logo.svg" alt="pdf-logo" />
+        </span>
+        <span class="button-text" [class.invisible]="loading === 'pdf'" i18n>Export to PDF</span>
     </button>
-    <button class="button overleaf" (click)="export('overleaf')">
-        <img class="logo" src="assets/overleaf-logo.svg" alt="overleaf-logo" />
-        <span i18n>Open in Overleaf</span>
+    <button
+        class="button overleaf"
+        (click)="export('overleaf')"
+        type="button"
+    >
+        <span class="icon">
+            <img src="assets/overleaf-logo.svg" alt="overleaf-logo" />
+        </span>
+        <span class="button-text" i18n>Open in Overleaf</span>
     </button>
 </div>
 
 <div class="output-container" *ngIf="texOutput">
+    <button
+        class="button is-small clipboard-copy"
+        type="button"
+        (click)="copyToClipboard()"
+    >
+        <span class="icon">
+            <img src="assets/copy-clipboard.svg" alt="copy to clipboard"
+        /></span>
+        <span i18n>Copy to clipboard</span>
+    </button>
     <pre
         name="tex-output"
         class="is-family-code"

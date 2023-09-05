@@ -1,10 +1,17 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { ErrorHandlerService } from "./error-handler.service";
 import { EMPTY, Observable, Subject, catchError, switchMap } from "rxjs";
 
+// This should be the same as the one in the backend.
+export const enum SpindleError {
+    SPINDLE = "spindle",
+    LATEX = "latex",
+    GENERAL = "general"
+}
+
 export interface SpindleReturn {
-    errors?: string[];
+    error?: SpindleError;
     tex?: string;
     pdf?: string;
     redirect?: string;
@@ -34,7 +41,11 @@ export class ApiService {
                 this.http.post<SpindleReturn>(
                     `/api/spindle/${input.mode}`,
                     { input: input.sentence },
-                    {}, // Options with headers, credentials etc. go here.
+                    {
+                        headers: new HttpHeaders({
+                            "Content-Type": "application/json",
+                        }),
+                    },
                 ),
             ),
             catchError((error) => {

@@ -1,4 +1,5 @@
-from typing import Literal
+from enum import Enum
+from typing import Literal, Optional
 from django.http import HttpRequest, JsonResponse
 from django.views import View
 import urllib3
@@ -7,51 +8,81 @@ import json
 import base64
 
 
+class SpindleError(Enum):
+    SPINDLE = "spindle"
+    LATEX = "latex"
+    GENERAL = "general"
+
+
+class SpindleResponse:
+    def __init__(
+        self,
+        tex: Optional[str] = None,
+        pdf: Optional[str] = None,
+        redirect: Optional[str] = None,
+        error: SpindleError = None,
+    ):
+        self.tex = tex
+        self.pdf = pdf
+        self.error = error
+        self.redirect = redirect
+
+    def jsonResponse(self) -> JsonResponse:
+        return JsonResponse(
+            {
+                "tex": self.tex,
+                "pdf": self.pdf,
+                "redirect": self.redirect,
+                "error": self.error.value if self.error else None,
+            }
+        )
+
+
 class SpindleView(View):
     def post(self, request: HttpRequest, mode: Literal["tex", "pdf", "overleaf"]):
         user_prompt = request.body.decode("utf-8")
 
         # Sending data to Spindle container.
-        response = urllib3.request(
-            method="POST", url="http://localhost:32768/", body=user_prompt
+        spindle_reponse = urllib3.request(
+            method="POST",
+            url="http://localhost:32768/",
+            body=user_prompt,
+            headers={"Content-Type": "application/json"},
         )
-        if response.status != 200:
-            return JsonResponse({"tex": None, "error": "Spindle container error."})
+        if spindle_reponse.status != 200:
+            return SpindleResponse(error=SpindleError.SPINDLE).jsonResponse()
 
-        spindle_response = response.data
-        tex = json.loads(spindle_response)["results"]
+        parse_result = spindle_reponse.data
+        tex = json.loads(parse_result)["results"]
 
         # Return LaTeX code immediately.
         if mode == "tex":
-            return JsonResponse({"tex": tex, "error": None})
+            return SpindleResponse(tex=tex).jsonResponse()
 
         # Forward LaTeX code to LaTeX service.
         # Return PDF
         if mode == "pdf":
-            response = urllib3.request(
-                method="POST", url="http://localhost:32769/", body=tex
+            latex_response = urllib3.request(
+                method="POST",
+                url="http://localhost:32769/",
+                body=tex,
+                headers={"Content-Type": "application/tex"},
             )
 
-            if response.status != 200:
-                return JsonResponse(
-                    {"pdf": None, "tex": tex, "error": "LaTeX container error."}
-                )
+            if latex_response.status != 200:
+                return SpindleResponse(tex=tex, error=SpindleError.LATEX).jsonResponse()
 
-            pdf = response.data
+            pdf = latex_response.data
             pdf_base64_string = base64.b64encode(pdf).decode("utf-8")
 
-            return JsonResponse(
-                {
-                    "tex": tex,
-                    "pdf": pdf_base64_string,
-                }
-            )
+            return SpindleResponse(tex=tex, pdf=pdf_base64_string).jsonResponse()
 
         # Compose a link to Overleaf.
         # quote() is used to escape special characters.
         if mode == "overleaf":
             redirect_url = f"https://www.overleaf.com/docs?snip={quote(tex)}"
 
-            return JsonResponse({"redirect": redirect_url})
+            return SpindleResponse(redirect=redirect_url).jsonResponse()
 
-        return JsonResponse({"error": "Invalid mode."})
+        # Should never happen.
+        return SpindleResponse(error=SpindleError.GENERAL).jsonResponse()

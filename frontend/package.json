@@ -2,16 +2,19 @@
   "name": "parseport",
   "version": "0.0.0",
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "ng-high-memory": "node --max_old_space_size=8192 ./node_modules/@angular/cli/bin/ng",
-    "build": "node ./build/build-pre.js && ng build",
+    "start": "yarn serve",
+    "build": "ng build --deploy-url='/static/'",
+    "watch": "ng build --watch",
+    "test": "ng test --watch=true",
+    "prebuild": "node ./build/build-pre.js",
+    "build:en": "ng build  --deploy-url='/static/' --configuration=production-en",
+    "i18n": "ng extract-i18n --output-path locale",
+    "preserve": "yarn prebuild",
     "serve": "ng serve --proxy-config ../proxy.conf.json",
+    "serve:en": "ng serve --proxy-config ../proxy.conf.json --configuration=en",
     "stop": "lsof -t -i tcp:4200 | xargs kill -9 || echo \"not running\"",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "test-once": "ng test --watch=false",
-    "lint": "ng lint"
+    "pretest": "yarn prebuild",
+    "test-once": "ng test --watch=false"
   },
   "private": true,
   "dependencies": {

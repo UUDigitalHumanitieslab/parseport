@@ -4,14 +4,15 @@ import { ErrorHandlerService } from "./error-handler.service";
 import { EMPTY, Observable, Subject, catchError, switchMap } from "rxjs";
 
 // This should be the same as the one in the backend.
-export const enum SpindleError {
+export const enum SpindleErrorSource {
+    INPUT = "input",
     SPINDLE = "spindle",
     LATEX = "latex",
-    GENERAL = "general"
+    GENERAL = "general",
 }
 
 export interface SpindleReturn {
-    error?: SpindleError;
+    error?: SpindleErrorSource;
     tex?: string;
     pdf?: string;
     redirect?: string;

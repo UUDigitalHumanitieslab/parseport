@@ -66,6 +66,10 @@ class SpindleView(View):
             headers={"Content-Type": "application/json"},
         )
         if spindle_reponse.status != 200:
+            logging.warn(
+                "Received non-200 response from Spindle server for input %s",
+                request_body,
+            )
             return SpindleResponse(error=SpindleErrorSource.SPINDLE).json_response()
 
         spindle_response_body = spindle_reponse.data
@@ -90,6 +94,9 @@ class SpindleView(View):
             )
 
             if latex_response.status != 200:
+                logging.warn(
+                    "Received non-200 response from LaTeX server for input %s", tex
+                )
                 return SpindleResponse(
                     tex=tex, error=SpindleErrorSource.LATEX
                 ).json_response()
@@ -105,5 +112,7 @@ class SpindleView(View):
             redirect_url = f"https://www.overleaf.com/docs?snip={quote(tex)}"
             return SpindleResponse(redirect=redirect_url).json_response()
 
-        # Should never happen.
+        # Only if the query param is not 'tex', 'pdf' or 'overleaf'.
+        # This should never happen.
+        logging.warn("Received unexpected mode.")
         return SpindleResponse(error=SpindleErrorSource.GENERAL).json_response()

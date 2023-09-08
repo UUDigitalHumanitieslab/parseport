@@ -34,7 +34,5 @@ venv.bak/
 # Node
 node_modules/
 frontend/src/environments/version.ts
-frontend/.angular/
-
-# Build files
-dist/
+frontend/.angular
+frontend/dist

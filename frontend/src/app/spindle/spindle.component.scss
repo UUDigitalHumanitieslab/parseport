@@ -1,0 +1,64 @@
+.button-container {
+    margin-top: 15px;
+
+    .button {
+        min-width: 200px;
+    }
+
+    .button-text {
+        margin-left: .5em;
+        color: white;
+
+        &.invisible {
+            visibility: hidden;
+        }
+    }
+
+    .logo {
+        max-height: 75%;
+    }
+
+    .latex {
+        background-color: black;
+
+        .icon {
+            width: 40px;
+        }
+    }
+
+    .overleaf {
+        background-color: #47A141;
+        position: relative;
+        
+        &::after {
+            content: "Requires an Overleaf account";
+            position: absolute;
+            font-size: .75em;
+            bottom: -1.5em;
+            color: gray;
+        }
+    }
+
+    .pdf {
+        background-color: #FF0000;
+    }
+}
+
+.output-container {
+    position: relative;
+
+    .clipboard-copy {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+
+        img {
+            max-height: 75%;
+        }
+    }
+
+    pre {
+        max-width: 100%;
+        overflow: scroll;
+    }
+}

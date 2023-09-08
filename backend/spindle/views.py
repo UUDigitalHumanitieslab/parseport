@@ -9,6 +9,8 @@ import json
 import base64
 import logging
 
+http = urllib3.PoolManager()
+
 
 class SpindleErrorSource(Enum):
     INPUT = "input"
@@ -35,49 +37,51 @@ class SpindleResponse:
         )
 
 
-# Checks whether string is JSON-parseable and has a specific key with a string value.
-def is_json_and_has_str_key(json_string: str, key: str) -> Optional[SpindleErrorSource]:
-    try:
-        parsed_json = json.loads(json_string)
-    except json.JSONDecodeError:
-        logging.warn("Input is not JSON parseable:", json_string)
-        return SpindleErrorSource.INPUT
-    if not key in parsed_json:
-        logging.warn("Key %s not found in input %s", key, json_string)
-        return SpindleErrorSource.INPUT
-    if not isinstance(parsed_json[key], str):
-        logging.warn("%s in input %s is not a string.", key, json_string)
-        return SpindleErrorSource.INPUT
-
-
 class SpindleView(View):
     def post(self, request: HttpRequest, mode: Literal["tex", "pdf", "overleaf"]):
         request_body = request.body.decode("utf-8")
 
-        request_error = is_json_and_has_str_key(request_body, "input")
-        if request_error:
-            return SpindleResponse(error=request_error)
+        try:
+            parsed_json = json.loads(request_body)
+        except json.JSONDecodeError:
+            logging.warn("Input is not JSON parseable:", request_body)
+            return SpindleResponse(error=SpindleErrorSource.INPUT).json_response()
+
+        if not "input" in parsed_json or not isinstance(parsed_json["input"], str):
+            logging.warn("Key input with value of type string not found:", request_body)
+            return SpindleResponse(error=SpindleErrorSource.INPUT).json_response()
 
         # Sending data to Spindle container.
-        spindle_reponse = urllib3.request(
+        spindle_response = http.request(
             method="POST",
             url="http://localhost:32768/",
             body=request_body,
             headers={"Content-Type": "application/json"},
         )
-        if spindle_reponse.status != 200:
+        if spindle_response.status != 200:
             logging.warn(
                 "Received non-200 response from Spindle server for input %s",
                 request_body,
             )
             return SpindleResponse(error=SpindleErrorSource.SPINDLE).json_response()
 
-        spindle_response_body = spindle_reponse.data
-        parse_result_error = is_json_and_has_str_key(spindle_response_body, "results")
-        if parse_result_error:
-            return SpindleResponse(error=parse_result_error)
+        try:
+            spindle_response_json = spindle_response.json()
+        except json.JSONDecodeError:
+            logging.warn("Spindle response is not JSON parseable: %s", spindle_response)
+            return SpindleResponse(error=SpindleErrorSource.SPINDLE).json_response()
 
-        tex = json.loads(spindle_response_body)["results"]
+        # Check if the spindle response has a key called "results" and if it is a string.
+        if not "results" in spindle_response_json or not isinstance(
+            spindle_response_json["results"], str
+        ):
+            logging.warn(
+                "Spindle response does not contain valid 'results': %s",
+                spindle_response.body,
+            )
+            return SpindleResponse(error=SpindleErrorSource.SPINDLE).json_response()
+
+        tex = spindle_response_json["results"]
 
         # Return LaTeX code immediately.
         if mode == "tex":
@@ -86,7 +90,7 @@ class SpindleView(View):
         # Forward LaTeX code to LaTeX service.
         # Return PDF
         if mode == "pdf":
-            latex_response = urllib3.request(
+            latex_response = http.request(
                 method="POST",
                 url="http://localhost:32769/",
                 body=tex,
@@ -101,7 +105,14 @@ class SpindleView(View):
                     tex=tex, error=SpindleErrorSource.LATEX
                 ).json_response()
 
-            pdf = latex_response.data
+            try:
+                pdf = latex_response.data
+            except KeyError:
+                logging.warn(
+                    "LaTeX response does not contain valid 'data': %s", latex_response
+                )
+                return SpindleResponse(error=SpindleErrorSource.LATEX).json_response()
+
             pdf_base64_string = base64.b64encode(pdf).decode("utf-8")
 
             return SpindleResponse(tex=tex, pdf=pdf_base64_string).json_response()

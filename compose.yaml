@@ -1,0 +1,21 @@
+
+version: "3"
+
+services:
+  spindle:
+    build: ../spindle-server
+    image: spindle-server
+
+    ports:
+      - "32768:5000"
+
+    restart: always
+
+  latex:
+    build: ../latex-service
+    image: latex-service
+
+    ports:
+      - "32769:5000"
+
+    restart: always

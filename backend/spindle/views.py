@@ -64,7 +64,7 @@ class SpindleView(View):
         logging.warn("Received unexpected mode.")
         return SpindleResponse(error=SpindleErrorSource.GENERAL).json_response()
 
-    def send_to_parser(self, text: str) -> str | None:
+    def send_to_parser(self, text: str) -> Optional[str]:
         """Send request to downstream (natural language) parser"""
         # Sending data to Spindle container.
         spindle_response = http.request(
@@ -94,7 +94,7 @@ class SpindleView(View):
         )
 
 
-    def read_request(self, request) -> str | None:
+    def read_request(self, request) -> Optional[str]:
         """Read and validate the HTTP request received from the frontend"""
         request_body = request.body.decode("utf-8")
 

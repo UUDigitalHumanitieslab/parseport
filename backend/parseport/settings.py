@@ -130,3 +130,6 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = []
 PROXY_FRONTEND = None
+
+SPINDLE_URL = "http://localhost:32768/"
+LATEX_SERVICE_URL = "http://localhost:32769/"

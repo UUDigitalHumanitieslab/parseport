@@ -4,12 +4,14 @@ import logging
 import urllib3
 from dataclasses import dataclass
 from enum import Enum
-from typing import Literal, Optional
+from typing import Literal, Optional, List
 from urllib.parse import quote
 
 from django.conf import settings
 from django.http import HttpRequest, JsonResponse
 from django.views import View
+
+from aethel.frontend import LexicalPhrase, Proof, json_to_serial_proof, json_to_serial_phrase, deserialize_proof, deserialize_phrase
 
 http = urllib3.PoolManager()
 
@@ -42,29 +44,36 @@ class SpindleResponse:
         )
 
 
+@dataclass
+class ParserResponse:
+    tex: str
+    proof: Proof
+    lexical_phrases: List[LexicalPhrase]
+
+
 class SpindleView(View):
     def post(self, request: HttpRequest, mode: Mode):
         data = self.read_request(request)
         if data is None:
             return SpindleResponse(error=SpindleErrorSource.INPUT).json_response()
 
-        tex = self.send_to_parser(data)
-        if tex is None:
+        parsed = self.send_to_parser(data)
+        if parsed is None:
             return SpindleResponse(error=SpindleErrorSource.SPINDLE).json_response()
 
         if mode == "tex":
-            return self.latex_response(tex)
+            return self.latex_response(parsed.tex)
         elif mode == "pdf":
-            return self.pdf_response(tex)
+            return self.pdf_response(parsed.tex)
         elif mode == "overleaf":
-            return self.overleaf_redirect(tex)
+            return self.overleaf_redirect(parsed.tex)
 
         # Only if the query param is not a valid mode
         # This should never happen.
         logging.warn("Received unexpected mode.")
         return SpindleResponse(error=SpindleErrorSource.GENERAL).json_response()
 
-    def send_to_parser(self, text: str) -> Optional[str]:
+    def send_to_parser(self, text: str) -> Optional[ParserResponse]:
         """Send request to downstream (natural language) parser"""
         # Sending data to Spindle container.
         spindle_response = http.request(
@@ -76,22 +85,24 @@ class SpindleView(View):
 
         if spindle_response.status != 200:
             logging.warn("Received non-200 response from Spindle server for input %s", text)
-            return
+            return None
 
         try:
             spindle_response_json = spindle_response.json()
         except json.JSONDecodeError as e:
             logging.warn("Spindle response is not JSON parseable: %s", e.msg)
-            return
+            return None
 
-        # Check if the spindle response has a key called "results" and if it is a string.
-        if "results" in spindle_response_json and isinstance(spindle_response_json["results"], str):
-            return spindle_response_json['results']
-
-        logging.warn(
-            "Spindle response does not contain valid 'results': %s",
-            json.dumps(spindle_response_json)
-        )
+        try:
+            return ParserResponse(tex=spindle_response_json['tex'],
+                                  proof=deserialize_proof(json_to_serial_proof(spindle_response_json['proof'])),
+                                  lexical_phrases=[deserialize_phrase(json_to_serial_phrase(phrase)) for phrase in
+                                                   spindle_response_json['lexical_phrases']])
+        except:
+            logging.exception(
+                "Spindle response does not contain valid 'results': %s",
+                json.dumps(spindle_response_json)
+            )
 
 
     def read_request(self, request) -> Optional[str]:

@@ -102,19 +102,19 @@ class SpindleView(View):
             parsed_json = json.loads(request_body)
         except json.JSONDecodeError:
             logging.warn("Input is not JSON parseable: %s", request_body)
-            return
+            return None
 
         if not "input" in parsed_json or not isinstance(parsed_json["input"], str):
             logging.warn("Key input with value of type string not found:", request_body)
-            return
+            return None
 
         return parsed_json['input']
 
-    def latex_response(self, tex):
+    def latex_response(self, tex) -> JsonResponse:
         """Return LaTeX code immediately."""
         return SpindleResponse(tex=tex).json_response()
 
-    def pdf_response(self, tex):
+    def pdf_response(self, tex) -> JsonResponse:
         """Forward LaTeX code to LaTeX service. Return PDF"""
         latex_response = http.request(
             method="POST",
@@ -137,7 +137,7 @@ class SpindleView(View):
         pdf_base64_string = base64.b64encode(pdf).decode("utf-8")
         return SpindleResponse(tex=tex, pdf=pdf_base64_string).json_response()
 
-    def overleaf_redirect(self, tex):
+    def overleaf_redirect(self, tex) -> JsonResponse:
         """Compose a link to Overleaf."""
         # quote() is used to escape special characters.
         redirect_url = f"https://www.overleaf.com/docs?snip={quote(tex)}"

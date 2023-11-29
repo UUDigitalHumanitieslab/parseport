@@ -17,7 +17,7 @@ http = urllib3.PoolManager()
 
 
 # Output mode
-Mode = Literal["tex", "pdf", "overleaf"]
+Mode = Literal["tex", "pdf", "overleaf", "term-table"]
 
 class SpindleErrorSource(Enum):
     INPUT = "input"
@@ -34,6 +34,7 @@ class SpindleResponse:
     error: Optional[SpindleErrorSource] = None
 
     def json_response(self) -> JsonResponse:
+        # TODO: set HTTP error code when error is not None
         return JsonResponse(
             {
                 "tex": self.tex,
@@ -67,6 +68,8 @@ class SpindleView(View):
             return self.pdf_response(parsed.tex)
         elif mode == "overleaf":
             return self.overleaf_redirect(parsed.tex)
+        elif mode == "term-table":
+            return self.term_table_response(parsed)
 
         # Only if the query param is not a valid mode
         # This should never happen.
@@ -153,3 +156,8 @@ class SpindleView(View):
         # quote() is used to escape special characters.
         redirect_url = f"https://www.overleaf.com/docs?snip={quote(tex)}"
         return SpindleResponse(redirect=redirect_url).json_response()
+
+    def term_table_response(self, parsed: ParserResponse) -> JsonResponse:
+        return JsonResponse(
+            dict(term=str(parsed.proof.term),
+                 lexical_phrases=[phrase.json() for phrase in parsed.lexical_phrases]))

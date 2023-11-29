@@ -57,7 +57,7 @@ class SpindleView(View):
         elif mode == "pdf":
             return self.pdf_response(tex)
         elif mode == "overleaf":
-            return self.overlead_redirect(tex)
+            return self.overleaf_redirect(tex)
 
         # Only if the query param is not a valid mode
         # This should never happen.
@@ -137,7 +137,7 @@ class SpindleView(View):
         pdf_base64_string = base64.b64encode(pdf).decode("utf-8")
         return SpindleResponse(tex=tex, pdf=pdf_base64_string).json_response()
 
-    def overlead_redirect(self, tex):
+    def overleaf_redirect(self, tex):
         """Compose a link to Overleaf."""
         # quote() is used to escape special characters.
         redirect_url = f"https://www.overleaf.com/docs?snip={quote(tex)}"

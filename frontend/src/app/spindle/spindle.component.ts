@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormControl, Validators } from "@angular/forms";
 import { Subject, takeUntil } from "rxjs";
-import { ApiService, SpindleMode } from "../shared/services/api.service";
+import { ApiService, LexicalPhrase, SpindleMode } from "../shared/services/api.service";
 import { ErrorHandlerService } from "../shared/services/error-handler.service";
 import { AlertService } from "../shared/services/alert.service";
 import { AlertType } from "../shared/components/alert/alert.component";
@@ -17,6 +17,10 @@ export class SpindleComponent implements OnInit, OnDestroy {
     });
     texOutput: string | null = null;
     loading: SpindleMode | null = null;
+    term: string | null = null;
+    lexicalPhrases: LexicalPhrase[] = [];
+    parsed: boolean = false;
+
     private destroy$ = new Subject<void>();
 
     constructor(
@@ -45,7 +49,16 @@ export class SpindleComponent implements OnInit, OnDestroy {
                 if (response.pdf) {
                     this.downloadPDF(response.pdf);
                 }
+                if (response.term && response.lexical_phrases) {
+                    this.term = response.term;
+                    this.lexicalPhrases = response.lexical_phrases;
+                    this.parsed = true;
+                }
             });
+    }
+
+    parse() {
+        this.export('term-table');
     }
 
     export(mode: SpindleMode): void {

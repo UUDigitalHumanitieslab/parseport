@@ -31,6 +31,10 @@ export class SpindleComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.destroy$))
             .subscribe((response) => {
                 this.loading = null;
+                // HTTP error
+                if (!response) {
+                    return;
+                }
                 if (response.error) {
                     this.errorHandler.handleSpindleError(response.error);
                     return;
@@ -64,22 +68,23 @@ export class SpindleComponent implements OnInit, OnDestroy {
         if (!this.texOutput) {
             this.alertService.alert$.next({
                 message: $localize`Failed to copy to clipboard.`,
-                type: AlertType.DANGER
-            })
+                type: AlertType.DANGER,
+            });
             return;
         }
-        navigator.clipboard.writeText(this.texOutput)
+        navigator.clipboard
+            .writeText(this.texOutput)
             .then(() => {
                 this.alertService.alert$.next({
                     message: $localize`Copied to clipboard.`,
-                    type: AlertType.SUCCESS
-                })
+                    type: AlertType.SUCCESS,
+                });
             })
             .catch(() => {
                 this.alertService.alert$.next({
                     message: $localize`Failed to copy to clipboard.`,
-                    type: AlertType.DANGER
-                })
+                    type: AlertType.DANGER,
+                });
             });
     }
 

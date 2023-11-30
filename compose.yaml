@@ -2,6 +2,18 @@
 version: "3"
 
 services:
+  parseport:
+    build: .
+    image: parseport
+
+    volumes:
+      - ./backend:/parseport
+
+    ports:
+      - "8000:8000"
+
+    restart: always
+
   spindle:
     build: ../spindle-server
     image: spindle-server

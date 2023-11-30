@@ -8,4 +8,4 @@ RUN pip install -r /tmp/requirements.txt
 
 WORKDIR /parseport
 
-CMD gunicorn --reload -b 0.0.0.0:8000 parseport.wsgi:application
+CMD gunicorn --reload -b 0.0.0.0:8000 wsgi:application --pythonpath=/private,/parseport

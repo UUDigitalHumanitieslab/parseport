@@ -7,7 +7,9 @@ services:
     image: parseport
 
     volumes:
+      - ../:/data
       - ./backend:/parseport
+      - ../../private:/private
 
     ports:
       - "8000:8000"

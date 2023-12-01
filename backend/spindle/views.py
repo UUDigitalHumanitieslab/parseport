@@ -2,7 +2,7 @@ import base64
 import json
 import logging
 import urllib3
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import Literal, Optional, List
 from urllib.parse import quote
@@ -11,13 +11,23 @@ from django.conf import settings
 from django.http import HttpRequest, JsonResponse
 from django.views import View
 
-from aethel.frontend import LexicalPhrase, Proof, json_to_serial_proof, json_to_serial_phrase, deserialize_proof, deserialize_phrase
+from aethel.frontend import (
+    LexicalPhrase,
+    Proof,
+    json_to_serial_proof,
+    json_to_serial_phrase,
+    deserialize_proof,
+    deserialize_phrase,
+    serialize_proof,
+    serial_proof_to_json,
+)
 
 http = urllib3.PoolManager()
 
 
 # Output mode
-Mode = Literal["tex", "pdf", "overleaf", "term-table"]
+Mode = Literal["tex", "pdf", "overleaf", "term-table", "proof-json"]
+
 
 class SpindleErrorSource(Enum):
     INPUT = "input"
@@ -32,6 +42,9 @@ class SpindleResponse:
     pdf: Optional[str] = None
     redirect: Optional[str] = None
     error: Optional[SpindleErrorSource] = None
+    term: Optional[str] = None
+    lexical_phrases: List[dict] = field(default_factory=list)
+    proof_json: Optional[dict] = None
 
     def json_response(self) -> JsonResponse:
         # TODO: set HTTP error code when error is not None
@@ -41,6 +54,9 @@ class SpindleResponse:
                 "pdf": self.pdf,
                 "redirect": self.redirect,
                 "error": self.error.value if self.error else None,
+                "term": self.term,
+                "lexical_phrases": self.lexical_phrases,
+                "proof_json": self.proof_json,
             }
         )
 
@@ -70,6 +86,8 @@ class SpindleView(View):
             return self.overleaf_redirect(parsed.tex)
         elif mode == "term-table":
             return self.term_table_response(parsed)
+        elif mode == "proof-json":
+            return self.proof_json_response(parsed)
 
         # Only if the query param is not a valid mode
         # This should never happen.
@@ -82,12 +100,14 @@ class SpindleView(View):
         spindle_response = http.request(
             method="POST",
             url=settings.SPINDLE_URL,
-            body=json.dumps({'input': text}),
+            body=json.dumps({"input": text}),
             headers={"Content-Type": "application/json"},
         )
 
         if spindle_response.status != 200:
-            logging.warn("Received non-200 response from Spindle server for input %s", text)
+            logging.warn(
+                "Received non-200 response from Spindle server for input %s", text
+            )
             return None
 
         try:
@@ -97,16 +117,21 @@ class SpindleView(View):
             return None
 
         try:
-            return ParserResponse(tex=spindle_response_json['tex'],
-                                  proof=deserialize_proof(json_to_serial_proof(spindle_response_json['proof'])),
-                                  lexical_phrases=[deserialize_phrase(json_to_serial_phrase(phrase)) for phrase in
-                                                   spindle_response_json['lexical_phrases']])
+            return ParserResponse(
+                tex=spindle_response_json["tex"],
+                proof=deserialize_proof(
+                    json_to_serial_proof(spindle_response_json["proof"])
+                ),
+                lexical_phrases=[
+                    deserialize_phrase(json_to_serial_phrase(phrase))
+                    for phrase in spindle_response_json["lexical_phrases"]
+                ],
+            )
         except:
             logging.exception(
                 "Spindle response does not contain valid 'results': %s",
-                json.dumps(spindle_response_json)
+                json.dumps(spindle_response_json),
             )
-
 
     def read_request(self, request) -> Optional[str]:
         """Read and validate the HTTP request received from the frontend"""
@@ -122,7 +147,7 @@ class SpindleView(View):
             logging.warn("Key input with value of type string not found:", request_body)
             return None
 
-        return parsed_json['input']
+        return parsed_json["input"]
 
     def latex_response(self, tex) -> JsonResponse:
         """Return LaTeX code immediately."""
@@ -138,13 +163,17 @@ class SpindleView(View):
         )
 
         if latex_response.status != 200:
-            logging.warn("Received non-200 response from LaTeX server for input %s", tex)
+            logging.warn(
+                "Received non-200 response from LaTeX server for input %s", tex
+            )
             return SpindleResponse(error=SpindleErrorSource.LATEX).json_response()
 
         try:
             pdf = latex_response.data
         except KeyError:
-            logging.warn("LaTeX response does not contain valid 'data': %s", latex_response)
+            logging.warn(
+                "LaTeX response does not contain valid 'data': %s", latex_response
+            )
             return SpindleResponse(error=SpindleErrorSource.LATEX).json_response()
 
         # PDF generated succesfully
@@ -158,6 +187,14 @@ class SpindleView(View):
         return SpindleResponse(redirect=redirect_url).json_response()
 
     def term_table_response(self, parsed: ParserResponse) -> JsonResponse:
-        return JsonResponse(
-            dict(term=str(parsed.proof.term),
-                 lexical_phrases=[phrase.json() for phrase in parsed.lexical_phrases]))
+        """Return the term and the lexical phrases as a JSON response."""
+        return SpindleResponse(
+            term=str(parsed.proof.term),
+            lexical_phrases=[phrase.json() for phrase in parsed.lexical_phrases],
+        ).json_response()
+
+    def proof_json_response(self, parsed: ParserResponse) -> JsonResponse:
+        """Return the proof as a JSON response."""
+        return SpindleResponse(
+            proof_json=serial_proof_to_json(serialize_proof(parsed.proof))
+        ).json_response()

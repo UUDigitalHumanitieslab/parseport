@@ -12,8 +12,8 @@ export const enum SpindleErrorSource {
 }
 
 export type LexicalPhrase = {
-    "items": {word: string}[],
-    "type": string
+    items: { word: string }[];
+    type: string;
 };
 
 export interface SpindleReturn {
@@ -23,9 +23,10 @@ export interface SpindleReturn {
     redirect?: string;
     term?: string;
     lexical_phrases?: LexicalPhrase[];
+    proof?: Record<string, unknown>;
 }
 
-export type SpindleMode = "tex" | "pdf" | "overleaf" | "term-table";
+export type SpindleMode = "tex" | "pdf" | "overleaf" | "term-table" | "proof-json";
 
 export interface SpindleInput {
     sentence: string;

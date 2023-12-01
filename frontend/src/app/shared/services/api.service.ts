@@ -18,7 +18,7 @@ export type LexicalPhrase = {
 
 export interface SpindleReturn {
     error?: SpindleErrorSource;
-    tex?: string;
+    latex?: string;
     pdf?: string;
     redirect?: string;
     term?: string;
@@ -26,7 +26,7 @@ export interface SpindleReturn {
     proof?: Record<string, unknown>;
 }
 
-export type SpindleMode = "tex" | "pdf" | "overleaf" | "term-table" | "proof-json";
+export type SpindleMode = "latex" | "pdf" | "overleaf" | "term-table" | "proof-json";
 
 export interface SpindleInput {
     sentence: string;

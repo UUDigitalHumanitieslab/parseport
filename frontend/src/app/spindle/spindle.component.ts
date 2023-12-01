@@ -15,7 +15,7 @@ export class SpindleComponent implements OnInit, OnDestroy {
     spindleInput = new FormControl<string>("", {
         validators: [Validators.required],
     });
-    texOutput: string | null = null;
+    latexOutput: string | null = null;
     loading: SpindleMode | null = null;
     term: string | null = null;
     lexicalPhrases: LexicalPhrase[] = [];
@@ -39,8 +39,8 @@ export class SpindleComponent implements OnInit, OnDestroy {
                     this.errorHandler.handleSpindleError(response.error);
                     return;
                 }
-                if (response.tex) {
-                    this.texOutput = response.tex;
+                if (response.latex) {
+                    this.latexOutput = response.latex;
                 }
                 if (response.redirect) {
                     // Opens a new tab.
@@ -69,19 +69,19 @@ export class SpindleComponent implements OnInit, OnDestroy {
             return;
         }
         this.loading = mode;
-        this.texOutput = null;
+        this.latexOutput = null;
         this.apiService.spindleInput$.next({ mode, sentence: userInput });
     }
 
     copyToClipboard(): void {
-        if (!this.texOutput) {
+        if (!this.latexOutput) {
             this.alertService.alert$.next({
                 message: $localize`Failed to copy to clipboard.`,
                 type: AlertType.DANGER
             })
             return;
         }
-        navigator.clipboard.writeText(this.texOutput)
+        navigator.clipboard.writeText(this.latexOutput)
             .then(() => {
                 this.alertService.alert$.next({
                     message: $localize`Copied to clipboard.`,

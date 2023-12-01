@@ -26,7 +26,7 @@ http = urllib3.PoolManager()
 
 
 # Output mode
-Mode = Literal["tex", "pdf", "overleaf", "term-table", "proof-json"]
+Mode = Literal["latex", "pdf", "overleaf", "term-table", "proof-json"]
 
 
 class SpindleErrorSource(Enum):
@@ -38,7 +38,7 @@ class SpindleErrorSource(Enum):
 
 @dataclass
 class SpindleResponse:
-    tex: Optional[str] = None
+    latex: Optional[str] = None
     pdf: Optional[str] = None
     redirect: Optional[str] = None
     error: Optional[SpindleErrorSource] = None
@@ -50,7 +50,7 @@ class SpindleResponse:
         # TODO: set HTTP error code when error is not None
         return JsonResponse(
             {
-                "tex": self.tex,
+                "latex": self.latex,
                 "pdf": self.pdf,
                 "redirect": self.redirect,
                 "error": self.error.value if self.error else None,
@@ -78,7 +78,7 @@ class SpindleView(View):
         if parsed is None:
             return SpindleResponse(error=SpindleErrorSource.SPINDLE).json_response()
 
-        if mode == "tex":
+        if mode == "latex":
             return self.latex_response(parsed.tex)
         elif mode == "pdf":
             return self.pdf_response(parsed.tex)
@@ -149,22 +149,22 @@ class SpindleView(View):
 
         return parsed_json["input"]
 
-    def latex_response(self, tex) -> JsonResponse:
+    def latex_response(self, latex: str) -> JsonResponse:
         """Return LaTeX code immediately."""
-        return SpindleResponse(tex=tex).json_response()
+        return SpindleResponse(latex=latex).json_response()
 
-    def pdf_response(self, tex) -> JsonResponse:
+    def pdf_response(self, latex: str) -> JsonResponse:
         """Forward LaTeX code to LaTeX service. Return PDF"""
         latex_response = http.request(
             method="POST",
             url=settings.LATEX_SERVICE_URL,
-            body=tex,
+            body=latex,
             headers={"Content-Type": "application/tex"},
         )
 
         if latex_response.status != 200:
             logging.warn(
-                "Received non-200 response from LaTeX server for input %s", tex
+                "Received non-200 response from LaTeX server for input %s", latex
             )
             return SpindleResponse(error=SpindleErrorSource.LATEX).json_response()
 
@@ -178,12 +178,12 @@ class SpindleView(View):
 
         # PDF generated succesfully
         pdf_base64_string = base64.b64encode(pdf).decode("utf-8")
-        return SpindleResponse(tex=tex, pdf=pdf_base64_string).json_response()
+        return SpindleResponse(latex=latex, pdf=pdf_base64_string).json_response()
 
-    def overleaf_redirect(self, tex) -> JsonResponse:
+    def overleaf_redirect(self, latex: str) -> JsonResponse:
         """Compose a link to Overleaf."""
         # quote() is used to escape special characters.
-        redirect_url = f"https://www.overleaf.com/docs?snip={quote(tex)}"
+        redirect_url = f"https://www.overleaf.com/docs?snip={quote(latex)}"
         return SpindleResponse(redirect=redirect_url).json_response()
 
     def term_table_response(self, parsed: ParserResponse) -> JsonResponse:

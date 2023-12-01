@@ -19,7 +19,7 @@ export class SpindleComponent implements OnInit, OnDestroy {
     loading: SpindleMode | null = null;
     term: string | null = null;
     lexicalPhrases: LexicalPhrase[] = [];
-    parsed: boolean = false;
+    parsed = false;
 
     private destroy$ = new Subject<void>();
 
@@ -57,7 +57,7 @@ export class SpindleComponent implements OnInit, OnDestroy {
             });
     }
 
-    parse() {
+    parse(): void {
         this.export('term-table');
     }
 

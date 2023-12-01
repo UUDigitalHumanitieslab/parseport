@@ -29,13 +29,12 @@
 </form>
 
 <div class="button-container buttons mb-3">
-    <button
-        class="button"
+    <dh-export-button
+        i18n-buttonText
+        buttonText="Parse"
+        [loading]="loading"
         (click)="parse()"
-        type="button"
-    >
-        Parse
-    </button>
+    ></dh-export-button>
 </div>
 
 <div *ngIf="term && lexicalPhrases">
@@ -56,40 +55,36 @@
 </div>
 
 <div class="mt-5" *ngIf="parsed">
-    <h4 class="title is-4">Export results</h4>
+    <h4 class="title is-4" i18n>Export results</h4>
     <div class="button-container buttons">
-        <button
-            class="button latex"
-            [class.is-loading]="loading === 'tex'"
-            (click)="export('tex')"
-            type="button"
-        >
-            <span class="icon">
-                <img src="assets/latex-logo.svg" alt="latex-logo" />
-            </span>
-            <span class="button-text" [class.invisible]="loading === 'tex'" i18n>Export to LaTeX</span>
-        </button>
-        <button
-            class="button pdf"
-            [class.is-loading]="loading === 'pdf'"
-            (click)="export('pdf')"
-            type="button"
-        >
-            <span class="icon">
-                <img src="assets/pdf-logo.svg" alt="pdf-logo" />
-            </span>
-            <span class="button-text" [class.invisible]="loading === 'pdf'" i18n>Export to PDF</span>
-        </button>
-        <button
-            class="button overleaf"
-            (click)="export('overleaf')"
-            type="button"
-        >
-            <span class="icon">
-                <img src="assets/overleaf-logo.svg" alt="overleaf-logo" />
-            </span>
-            <span class="button-text" i18n>Open in Overleaf</span>
-        </button>
+        <dh-export-button
+            buttonText="Export to LaTeX"
+            [loading]="loading"
+            (export)="export"
+            mode="tex"
+            i18n-buttonText
+        />
+        <dh-export-button
+            buttonText="Export to PDF"
+            [loading]="loading"
+            (export)="export"
+            mode="pdf"
+            i18n-buttonText
+        />
+        <dh-export-button
+            buttonText="Open in Overleaf"
+            [loading]="loading"
+            (export)="export"
+            mode="overleaf"
+            i18n-buttonText
+        />
+        <dh-export-button
+            buttonText="Export proof"
+            [loading]="loading"
+            (export)="export"
+            mode="proof-json"
+            i18n-buttonText
+        />
     </div>
 
     <div class="output-container" *ngIf="texOutput">

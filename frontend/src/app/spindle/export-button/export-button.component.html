@@ -1,0 +1,14 @@
+<button
+    [class]="mode ? 'button ' + mode : 'button'"
+    [class.is-loading]="loading === mode"
+    (click)="export.emit(mode)"
+    type="button"
+>
+    <span *ngIf="mode" class="icon">
+        <img  src="assets/{{mode}}-logo.svg" alt="{{mode}}-logo" />
+    </span>
+    <span 
+        class="button-text"
+        [class.withIcon]="mode !== null"
+        [class.invisible]="loading !== null" i18n>{{buttonText}}</span>
+</button>

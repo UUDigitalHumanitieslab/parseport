@@ -1,0 +1,45 @@
+.button {
+    min-width: 200px;
+}
+
+.button-text {
+    &.withIcon {
+        margin-left: .5em;
+    }
+
+    &.invisible {
+        visibility: hidden;
+    }
+}
+
+.logo {
+    max-height: 75%;
+}
+
+.tex {
+    background-color: black;
+    color: white;
+
+    .icon {
+        width: 40px;
+    }
+}
+
+.overleaf {
+    background-color: #47A141;
+    color: white;
+    position: relative;
+    
+    &::after {
+        content: "Requires an Overleaf account";
+        position: absolute;
+        font-size: .75em;
+        bottom: -1.5em;
+        color: gray;
+    }
+}
+
+.pdf {
+    background-color: #FF0000;
+    color: white;
+}

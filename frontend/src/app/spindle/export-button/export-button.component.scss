@@ -3,7 +3,7 @@
 }
 
 .button-text {
-    &.withIcon {
+    &.with-icon {
         margin-left: .5em;
     }
 
@@ -16,7 +16,18 @@
     max-height: 75%;
 }
 
-.tex {
+.with-text-below {
+    position: relative;
+
+    .text-below {
+        position: absolute;
+        font-size: .75em;
+        bottom: -1.5em;
+        color: gray;
+    }
+}
+
+.latex {
     background-color: black;
     color: white;
 
@@ -28,18 +39,14 @@
 .overleaf {
     background-color: #47A141;
     color: white;
-    position: relative;
-    
-    &::after {
-        content: "Requires an Overleaf account";
-        position: absolute;
-        font-size: .75em;
-        bottom: -1.5em;
-        color: gray;
-    }
 }
 
 .pdf {
     background-color: #FF0000;
+    color: white;
+}
+
+.proof-json {
+    background-color: #4444ca;
     color: white;
 }

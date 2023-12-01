@@ -32,7 +32,7 @@
     <dh-export-button
         i18n-buttonText
         buttonText="Parse"
-        [loading]="loading"
+        [isLoading]="loading === 'term-table'"
         (click)="parse()"
     ></dh-export-button>
 </div>
@@ -59,35 +59,38 @@
     <div class="button-container buttons">
         <dh-export-button
             buttonText="Export to LaTeX"
-            [loading]="loading"
+            [isLoading]="loading === 'latex'"
             (export)="export"
-            mode="tex"
+            mode="latex"
             i18n-buttonText
         />
         <dh-export-button
             buttonText="Export to PDF"
-            [loading]="loading"
+            [isLoading]="loading === 'pdf'"
             (export)="export"
             mode="pdf"
             i18n-buttonText
         />
         <dh-export-button
             buttonText="Open in Overleaf"
-            [loading]="loading"
+            [isLoading]="loading === 'overleaf'"
             (export)="export"
+            textBelow="Requires an Overleaf account."
             mode="overleaf"
             i18n-buttonText
+            i18n-textBelow
         />
         <dh-export-button
             buttonText="Export proof"
-            [loading]="loading"
+            [isLoading]="loading === 'proof-json'"
             (export)="export"
+            textBelow="Downloads a Proof object in JSON"
             mode="proof-json"
             i18n-buttonText
         />
     </div>
 
-    <div class="output-container" *ngIf="texOutput">
+    <div class="output-container" *ngIf="latexOutput">
         <button
             class="button is-small clipboard-copy"
             type="button"
@@ -101,7 +104,7 @@
         <pre
             name="tex-output"
             class="is-family-code"
-            [innerText]="texOutput"
+            [innerText]="latexOutput"
             disabled
         ></pre>
     </div>

@@ -9,6 +9,7 @@ import { SpindleMode } from "src/app/shared/services/api.service";
 export class ExportButtonComponent {
     @Output() export = new EventEmitter<SpindleMode | null>();
     @Input() mode: SpindleMode | null = null;
-    @Input() loading: SpindleMode | null = null;
-    @Input() buttonText = "Export";
+    @Input() isLoading = false;
+    @Input() buttonText = $localize `Export`;
+    @Input() textBelow: string | null = null;
 }

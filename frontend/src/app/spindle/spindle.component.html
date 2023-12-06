@@ -33,12 +33,14 @@
         class="button"
         (click)="parse()"
         type="button"
+        i18n
     >
         Parse
     </button>
 </div>
 
 <div *ngIf="term && lexicalPhrases">
+    <h4 i18n>Term:</h4>
     <div class="block is-size-4">{{ term }}</div>
     <table class="table">
         <tr *ngFor="let phrase of lexicalPhrases; index as i">
@@ -56,7 +58,7 @@
 </div>
 
 <div class="mt-5" *ngIf="parsed">
-    <h4 class="title is-4">Export results</h4>
+    <h4 class="title is-4" i18n>Export results</h4>
     <div class="button-container buttons">
         <button
             class="button latex"

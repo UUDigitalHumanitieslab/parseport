@@ -108,7 +108,7 @@ class SpindleView(View):
             )
 
 
-    def read_request(self, request) -> Optional[str]:
+    def read_request(self, request: HttpRequest) -> Optional[str]:
         """Read and validate the HTTP request received from the frontend"""
         request_body = request.body.decode("utf-8")
 
@@ -124,7 +124,7 @@ class SpindleView(View):
 
         return parsed_json['input']
 
-    def latex_response(self, tex) -> JsonResponse:
+    def latex_response(self, tex: str) -> JsonResponse:
         """Return LaTeX code immediately."""
         return SpindleResponse(tex=tex).json_response()
 
@@ -151,7 +151,7 @@ class SpindleView(View):
         pdf_base64_string = base64.b64encode(pdf).decode("utf-8")
         return SpindleResponse(tex=tex, pdf=pdf_base64_string).json_response()
 
-    def overleaf_redirect(self, tex) -> JsonResponse:
+    def overleaf_redirect(self, tex: str) -> JsonResponse:
         """Compose a link to Overleaf."""
         # quote() is used to escape special characters.
         redirect_url = f"https://www.overleaf.com/docs?snip={quote(tex)}"

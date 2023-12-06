@@ -15,7 +15,7 @@
         "install-back": "yarn back -- pip install -r requirements.txt",
         "install-func": "yarn func -- pip install -r requirements.txt",
         "postinstall": "yarn fyarn && yarn install-back && yarn install-func",
-        "django": "yarn back docker compose run parseport python manage.py",
+        "django": "yarn back python manage.py",
         "startapp": "yarn back django-admin startapp --settings parseport.settings --pythonpath .",
         "test-front": "yarn front yarn test-once",
         "test-back": "yarn back pytest",

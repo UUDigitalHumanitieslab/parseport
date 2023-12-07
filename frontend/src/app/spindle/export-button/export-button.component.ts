@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { SpindleMode } from "src/app/shared/services/api.service";
 
 @Component({
-    selector: "dh-export-button",
+    selector: "pp-export-button",
     templateUrl: "./export-button.component.html",
     styleUrls: ["./export-button.component.scss"],
 })

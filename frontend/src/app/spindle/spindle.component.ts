@@ -19,7 +19,7 @@ interface TextOutput {
 }
 
 @Component({
-    selector: "dh-spindle",
+    selector: "pp-spindle",
     templateUrl: "./spindle.component.html",
     styleUrls: ["./spindle.component.scss"],
 })
@@ -95,7 +95,7 @@ export class SpindleComponent implements OnInit, OnDestroy {
         return this.term !== null && this.lexicalPhrases.length > 0;
     }
 
-    export(mode: SpindleMode): void {
+    export(mode: SpindleMode | null): void {
         this.spindleInput.markAsTouched();
         this.spindleInput.updateValueAndValidity();
         const userInput = this.spindleInput.value;

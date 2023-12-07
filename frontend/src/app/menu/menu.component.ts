@@ -3,7 +3,7 @@ import { animations, ShowState } from '../animations';
 
 @Component({
     animations,
-    selector: 'dh-menu',
+    selector: 'pp-menu',
     templateUrl: './menu.component.html',
     styleUrls: ['./menu.component.scss']
 })

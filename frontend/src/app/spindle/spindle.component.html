@@ -29,12 +29,12 @@
 </form>
 
 <div class="button-container buttons mb-3">
-    <dh-export-button
+    <pp-export-button
         i18n-buttonText
         buttonText="Parse"
         [isLoading]="loading === 'term-table'"
         (click)="parse()"
-    ></dh-export-button>
+    ></pp-export-button>
 </div>
 
 <div *ngIf="term && lexicalPhrases">
@@ -58,21 +58,21 @@
 <div class="mt-5" *ngIf="parsed">
     <h4 class="title is-4" i18n>Export results</h4>
     <div class="button-container buttons">
-        <dh-export-button
+        <pp-export-button
             buttonText="Export to LaTeX"
             [isLoading]="loading === 'latex'"
             (export)="export($event)"
             mode="latex"
             i18n-buttonText
         />
-        <dh-export-button
+        <pp-export-button
             buttonText="Export to PDF"
             [isLoading]="loading === 'pdf'"
             (export)="export($event)"
             mode="pdf"
             i18n-buttonText
         />
-        <dh-export-button
+        <pp-export-button
             buttonText="Open in Overleaf"
             [isLoading]="loading === 'overleaf'"
             (export)="export($event)"
@@ -81,7 +81,7 @@
             i18n-buttonText
             i18n-textBelow
         />
-        <dh-export-button
+        <pp-export-button
             buttonText="Export proof"
             [isLoading]="loading === 'proof'"
             (export)="export($event)"

@@ -1,29 +1,117 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { SpindleComponent } from './spindle.component';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ReactiveFormsModule } from '@angular/forms';
-import { JsonPipe } from '@angular/common';
-import { ExportButtonComponent } from './export-button/export-button.component';
+import { SpindleComponent } from "./spindle.component";
+import {
+    HttpClientTestingModule,
+    HttpTestingController,
+} from "@angular/common/http/testing";
+import { ReactiveFormsModule } from "@angular/forms";
+import { JsonPipe } from "@angular/common";
+import { ExportButtonComponent } from "./export-button/export-button.component";
+import { ApiService, SpindleReturn } from "../shared/services/api.service";
 
-describe('SpindleComponent', () => {
-  let component: SpindleComponent;
-  let fixture: ComponentFixture<SpindleComponent>;
+describe("SpindleComponent", () => {
+    let component: SpindleComponent;
+    let fixture: ComponentFixture<SpindleComponent>;
+    let apiService: ApiService;
+    let httpTestingController: HttpTestingController;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, ReactiveFormsModule],
-      declarations: [SpindleComponent, ExportButtonComponent],
-      providers: [JsonPipe]
-    })
-    .compileComponents();
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule, ReactiveFormsModule],
+            declarations: [SpindleComponent, ExportButtonComponent],
+            providers: [JsonPipe],
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(SpindleComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+        fixture = TestBed.createComponent(SpindleComponent);
+        component = fixture.componentInstance;
+        apiService = TestBed.inject(ApiService);
+        httpTestingController = TestBed.inject(HttpTestingController);
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    afterEach(() => {
+        // After every test, assert that there are no more pending requests.
+        httpTestingController.verify();
+    });
+
+    it("should create", () => {
+        expect(component).toBeTruthy();
+    });
+
+    it("should pass text + mode to the API service when parse is clicked", () => {
+        component.spindleInput.setValue("test sentence");
+        apiService.spindleInput$.subscribe((input) => {
+            expect(input.mode).toEqual("term-table");
+            expect(input.sentence).toEqual("test sentence");
+        });
+        component.parse();
+        const request = httpTestingController.expectOne(
+            "/api/spindle/term-table",
+        );
+        request.flush({});
+    });
+
+    it("should pass text + mode to the API service when export is clicked", () => {
+        component.spindleInput.setValue("test sentence 2");
+        apiService.spindleInput$.subscribe((input) => {
+            expect(input.mode).toEqual("pdf");
+            expect(input.sentence).toEqual("test sentence 2");
+        });
+        component.export("pdf");
+        const request = httpTestingController.expectOne("/api/spindle/pdf");
+        request.flush({});
+    });
+
+    it("should start a download when export to PDF is clicked", () => {
+        // Private method, so any is required.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const downloadSpy = spyOn<any>(component, "downloadFile");
+
+        const fakeReturn: SpindleReturn = {
+            error: null,
+            latex: "mock-tex",
+            pdf: "fake-pdf-string",
+            redirect: null,
+            term: null,
+            lexical_phrases: [],
+            proof: null,
+        };
+
+        component.spindleInput.setValue("test sentence 3");
+        component.export("pdf");
+
+        const request = httpTestingController.expectOne("/api/spindle/pdf");
+        expect(request.request.method).toEqual("POST");
+        request.flush(fakeReturn);
+
+        expect(downloadSpy).toHaveBeenCalledWith(
+            "spindleParseResult.pdf",
+            "data:application/pdf;base64,fake-pdf-string",
+        );
+    });
+
+    it("should return a proof when Export to Proof is clicked", () => {
+        const fakeReturn: SpindleReturn = {
+            error: null,
+            latex: null,
+            pdf: null,
+            redirect: null,
+            term: null,
+            lexical_phrases: [],
+            proof: { a: 1, b: 2 },
+        };
+
+        component.spindleInput.setValue("test sentence 4");
+        component.export("proof");
+
+        const request = httpTestingController.expectOne("/api/spindle/proof");
+        expect(request.request.method).toEqual("POST");
+        request.flush(fakeReturn);
+
+        expect(component.textOutput).toEqual({
+            extension: "json",
+            text: '{\n  "a": 1,\n  "b": 2\n}',
+        });
+    });
 });

@@ -7,7 +7,7 @@ import { SpindleMode } from "src/app/shared/services/api.service";
     styleUrls: ["./export-button.component.scss"],
 })
 export class ExportButtonComponent {
-    @Output() export = new EventEmitter<SpindleMode | null>();
+    @Output() export = new EventEmitter<SpindleMode>();
     @Input() mode: SpindleMode | null = null;
     @Input() isLoading = false;
     @Input() buttonText = $localize `Export`;

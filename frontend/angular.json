@@ -19,7 +19,7 @@
       },
       "root": "",
       "sourceRoot": "src",
-      "prefix": "dh",
+      "prefix": "pp",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",

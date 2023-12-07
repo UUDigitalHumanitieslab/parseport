@@ -21,7 +21,7 @@
         "test-back": "yarn back pytest",
         "test-func": "yarn func pytest",
         "test": "yarn test-back && yarn test-front && yarn test-func",
-        "start-front": "yarn fyarn stop && yarn front yarn serve",
+        "start-front": "yarn front yarn serve",
         "start-back": "cd backend && python manage.py runserver --settings glue --pythonpath ..",
         "livereload-back": "cd backend && python manage.py livereload --settings glue --pythonpath ..",
         "watch-test-front": "yarn front yarn test",

@@ -36,3 +36,6 @@ node_modules/
 frontend/src/environments/version.ts
 frontend/.angular
 frontend/dist
+
+# VS Code
+.vscode/

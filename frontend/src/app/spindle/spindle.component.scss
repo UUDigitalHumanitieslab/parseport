@@ -5,14 +5,13 @@
 .output-container {
     position: relative;
 
-    .clipboard-copy {
+    .output-button-container {
         position: absolute;
         top: 5px;
         right: 5px;
-
-        img {
-            max-height: 75%;
-        }
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
     }
 
     pre {

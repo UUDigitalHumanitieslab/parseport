@@ -12,12 +12,10 @@
         class="button-text"
         [class.with-icon]="mode !== null"
         [class.invisible]="isLoading"
-        i18n
-        >{{ buttonText }}</span
     >
-    <span
-        class="text-below"
-        [class.invisible]="textBelow === null"
-        i18n
-        >{{ textBelow }}</span>
+        {{ buttonText }}
+    </span>
+    <span class="text-below" [class.invisible]="textBelow === null" i18n>
+        {{ textBelow }}
+    </span>
 </button>

@@ -16,6 +16,7 @@ export type LexicalPhrase = {
     type: string;
 };
 
+// Should correspond with SpindleResponse dataclass in backend.
 export interface SpindleReturn {
     error?: SpindleErrorSource;
     latex?: string;
@@ -26,7 +27,12 @@ export interface SpindleReturn {
     proof?: Record<string, unknown>;
 }
 
-export type SpindleMode = "latex" | "pdf" | "overleaf" | "term-table" | "proof-json";
+export type SpindleMode =
+    | "latex"
+    | "pdf"
+    | "overleaf"
+    | "term-table"
+    | "proof";
 
 export interface SpindleInput {
     sentence: string;

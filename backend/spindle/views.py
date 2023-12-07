@@ -134,7 +134,7 @@ class SpindleView(View):
                 json.dumps(spindle_response_json),
             )
 
-    def read_request(self, request) -> Optional[str]:
+    def read_request(self, request: HttpRequest) -> Optional[str]:
         """Read and validate the HTTP request received from the frontend"""
         request_body = request.body.decode("utf-8")
 

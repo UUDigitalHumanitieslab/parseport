@@ -38,6 +38,7 @@
 </div>
 
 <div *ngIf="term && lexicalPhrases">
+    <h4 i18n>Term:</h4>
     <div class="block is-size-4">{{ term }}</div>
     <table class="table">
         <tr *ngFor="let phrase of lexicalPhrases; index as i">

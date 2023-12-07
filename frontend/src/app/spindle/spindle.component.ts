@@ -32,8 +32,6 @@ export class SpindleComponent implements OnInit, OnDestroy {
     lexicalPhrases: LexicalPhrase[] = [];
     loading: SpindleMode | null = null;
 
-    parsed = false;
-
     faCopy = faCopy;
     faDownload = faDownload;
 
@@ -52,6 +50,10 @@ export class SpindleComponent implements OnInit, OnDestroy {
             .pipe(takeUntil(this.destroy$))
             .subscribe((response) => {
                 this.loading = null;
+                // HTTP error
+                if (!response) {
+                    return;
+                }
                 if (response.error) {
                     this.errorHandler.handleSpindleError(response.error);
                     return;
@@ -75,7 +77,6 @@ export class SpindleComponent implements OnInit, OnDestroy {
                 if (response.term && response.lexical_phrases) {
                     this.term = response.term;
                     this.lexicalPhrases = response.lexical_phrases;
-                    this.parsed = true;
                 }
                 if (response.proof) {
                     this.textOutput = {
@@ -90,7 +91,11 @@ export class SpindleComponent implements OnInit, OnDestroy {
         this.export("term-table");
     }
 
-    export(mode: SpindleMode | null): void {
+    get parsed(): boolean {
+        return this.term !== null && this.lexicalPhrases.length > 0;
+    }
+
+    export(mode: SpindleMode): void {
         this.spindleInput.markAsTouched();
         this.spindleInput.updateValueAndValidity();
         const userInput = this.spindleInput.value;

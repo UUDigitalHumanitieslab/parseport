@@ -26,7 +26,7 @@ http = urllib3.PoolManager()
 
 
 # Output mode
-Mode = Literal["latex", "pdf", "overleaf", "term-table", "proof-json"]
+Mode = Literal["latex", "pdf", "overleaf", "term-table", "proof"]
 
 
 class SpindleErrorSource(Enum):
@@ -36,6 +36,7 @@ class SpindleErrorSource(Enum):
     GENERAL = "general"
 
 
+# Should correspond with SpindleReturn interface in frontend.
 @dataclass
 class SpindleResponse:
     latex: Optional[str] = None
@@ -44,7 +45,7 @@ class SpindleResponse:
     error: Optional[SpindleErrorSource] = None
     term: Optional[str] = None
     lexical_phrases: List[dict] = field(default_factory=list)
-    proof_json: Optional[dict] = None
+    proof: Optional[dict] = None
 
     def json_response(self) -> JsonResponse:
         # TODO: set HTTP error code when error is not None
@@ -56,7 +57,7 @@ class SpindleResponse:
                 "error": self.error.value if self.error else None,
                 "term": self.term,
                 "lexical_phrases": self.lexical_phrases,
-                "proof_json": self.proof_json,
+                "proof": self.proof,
             }
         )
 
@@ -86,8 +87,8 @@ class SpindleView(View):
             return self.overleaf_redirect(parsed.tex)
         elif mode == "term-table":
             return self.term_table_response(parsed)
-        elif mode == "proof-json":
-            return self.proof_json_response(parsed)
+        elif mode == "proof":
+            return self.proof_response(parsed)
 
         # Only if the query param is not a valid mode
         # This should never happen.
@@ -193,8 +194,8 @@ class SpindleView(View):
             lexical_phrases=[phrase.json() for phrase in parsed.lexical_phrases],
         ).json_response()
 
-    def proof_json_response(self, parsed: ParserResponse) -> JsonResponse:
+    def proof_response(self, parsed: ParserResponse) -> JsonResponse:
         """Return the proof as a JSON response."""
         return SpindleResponse(
-            proof_json=serial_proof_to_json(serialize_proof(parsed.proof))
+            proof=serial_proof_to_json(serialize_proof(parsed.proof))
         ).json_response()

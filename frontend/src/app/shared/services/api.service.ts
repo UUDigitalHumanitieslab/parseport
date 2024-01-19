@@ -11,14 +11,21 @@ export const enum SpindleErrorSource {
     GENERAL = "general",
 }
 
+export type LexicalPhrase = {
+    "items": {word: string}[],
+    "type": string
+};
+
 export interface SpindleReturn {
     error?: SpindleErrorSource;
     tex?: string;
     pdf?: string;
     redirect?: string;
+    term?: string;
+    lexical_phrases?: LexicalPhrase[];
 }
 
-export type SpindleMode = "tex" | "pdf" | "overleaf";
+export type SpindleMode = "tex" | "pdf" | "overleaf" | "term-table";
 
 export interface SpindleInput {
     sentence: string;

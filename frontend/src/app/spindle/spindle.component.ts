@@ -9,12 +9,11 @@ import {
 import { ErrorHandlerService } from "../shared/services/error-handler.service";
 import { AlertService } from "../shared/services/alert.service";
 import { AlertType } from "../shared/components/alert/alert.component";
-import { JsonPipe } from "@angular/common";
 
 import { faDownload, faCopy } from "@fortawesome/free-solid-svg-icons";
 
 interface TextOutput {
-    extension: 'json' | 'tex';
+    extension: "json" | "tex";
     text: string;
 }
 
@@ -40,8 +39,7 @@ export class SpindleComponent implements OnInit, OnDestroy {
     constructor(
         private apiService: ApiService,
         private alertService: AlertService,
-        private errorHandler: ErrorHandlerService,
-        private JSONPipe: JsonPipe,
+        private errorHandler: ErrorHandlerService
     ) {}
 
     ngOnInit(): void {
@@ -60,9 +58,9 @@ export class SpindleComponent implements OnInit, OnDestroy {
                 }
                 if (response.latex) {
                     this.textOutput = {
-                        extension: 'tex',
-                        text: response.latex
-                    }
+                        extension: "tex",
+                        text: response.latex,
+                    };
                 }
                 if (response.redirect) {
                     // Opens a new tab.
@@ -70,9 +68,7 @@ export class SpindleComponent implements OnInit, OnDestroy {
                 }
                 if (response.pdf) {
                     const base64 = response.pdf;
-                    const linkSource = `data:application/pdf;base64,${base64}`;
-                    const fileName = "spindleParseResult.pdf";
-                    this.downloadFile(fileName, linkSource);
+                    this.downloadAsFile(base64, "pdf");
                 }
                 if (response.term && response.lexical_phrases) {
                     this.term = response.term;
@@ -80,9 +76,10 @@ export class SpindleComponent implements OnInit, OnDestroy {
                 }
                 if (response.proof) {
                     this.textOutput = {
-                        extension: 'json',
-                        text: this.JSONPipe.transform(response.proof)
-                    }
+                        extension: "json",
+                        // The additional arguments are for pretty-printing.
+                        text: JSON.stringify(response.proof, null, 2),
+                    };
                 }
                 if (response.term && response.lexical_phrases) {
                     this.term = response.term;
@@ -92,6 +89,7 @@ export class SpindleComponent implements OnInit, OnDestroy {
     }
 
     parse(): void {
+        this.clearResults();
         this.export("term-table");
     }
 
@@ -107,9 +105,8 @@ export class SpindleComponent implements OnInit, OnDestroy {
             return;
         }
         this.loading = mode;
-        this.clearResults();
         this.apiService.spindleInput$.next({
-            mode: mode ?? "term-table",
+            mode,
             sentence: userInput,
         });
     }
@@ -131,11 +128,25 @@ export class SpindleComponent implements OnInit, OnDestroy {
             });
     }
 
-    downloadAsFile(textData: string, extension: 'tex' | 'json'): void {
+    downloadAsFile(textData: string, extension: "tex" | "json" | "pdf"): void {
         const fileName = "spindleParseResult." + extension;
-        const blob = new Blob([textData], { type: `application/${extension}` });
-        const url = window.URL.createObjectURL(blob);
+        let url = "";
+        // PDF data (base64) does not need to be converted to a blob.
+        if (extension === "pdf") {
+            url = `data:application/pdf;base64,${textData}`;
+        } else {
+            const blob = new Blob([textData], {
+                type: `application/${extension}`,
+            });
+            url = window.URL.createObjectURL(blob);
+        }
+
         this.downloadFile(fileName, url);
+
+        // Revoke the object URL after downloading.
+        if (extension !== "pdf") {
+            this.revokeObjectURL(url);
+        }
     }
 
     ngOnDestroy(): void {
@@ -155,6 +166,9 @@ export class SpindleComponent implements OnInit, OnDestroy {
         link.download = fileName;
         link.click();
         link.remove();
+    }
+
+    private revokeObjectURL(url: string): void {
         window.URL.revokeObjectURL(url);
     }
 }

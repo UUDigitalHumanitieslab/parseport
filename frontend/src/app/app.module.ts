@@ -15,7 +15,6 @@ import { AlertComponent } from './shared/components/alert/alert.component';
 import { AlertContainerDirective } from './shared/directives/alert-container.directive';
 import { AlertService } from './shared/services/alert.service';
 import { ExportButtonComponent } from './spindle/export-button/export-button.component';
-import { JsonPipe } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
@@ -41,7 +40,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
         ReactiveFormsModule,
         FontAwesomeModule,
     ],
-    providers: [AlertService, JsonPipe],
+    providers: [AlertService],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -6,7 +6,6 @@ import {
     HttpTestingController,
 } from "@angular/common/http/testing";
 import { ReactiveFormsModule } from "@angular/forms";
-import { JsonPipe } from "@angular/common";
 import { ExportButtonComponent } from "./export-button/export-button.component";
 import { ApiService, SpindleReturn } from "../shared/services/api.service";
 
@@ -20,7 +19,6 @@ describe("SpindleComponent", () => {
         await TestBed.configureTestingModule({
             imports: [HttpClientTestingModule, ReactiveFormsModule],
             declarations: [SpindleComponent, ExportButtonComponent],
-            providers: [JsonPipe],
         }).compileComponents();
 
         fixture = TestBed.createComponent(SpindleComponent);
@@ -109,9 +107,13 @@ describe("SpindleComponent", () => {
         expect(request.request.method).toEqual("POST");
         request.flush(fakeReturn);
 
-        expect(component.textOutput).toEqual({
-            extension: "json",
-            text: '{\n  "a": 1,\n  "b": 2\n}',
-        });
+        expect(component.textOutput?.extension).toBe("json");
+
+        const expected = {
+            a: 1,
+            b: 2,
+        };
+        const parsedText = JSON.parse(component.textOutput?.text ?? "");
+        expect(parsedText).toEqual(expected);
     });
 });

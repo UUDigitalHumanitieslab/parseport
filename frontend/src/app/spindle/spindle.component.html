@@ -29,14 +29,12 @@
 </form>
 
 <div class="button-container buttons mb-3">
-    <button
-        class="button"
+    <pp-export-button
+        i18n-buttonText
+        buttonText="Parse"
+        [isLoading]="loading === 'term-table'"
         (click)="parse()"
-        type="button"
-        i18n
-    >
-        Parse
-    </button>
+    ></pp-export-button>
 </div>
 
 <div *ngIf="term && lexicalPhrases">
@@ -60,55 +58,65 @@
 <div class="mt-5" *ngIf="parsed">
     <h4 class="title is-4" i18n>Export results</h4>
     <div class="button-container buttons">
-        <button
-            class="button latex"
-            [class.is-loading]="loading === 'tex'"
-            (click)="export('tex')"
-            type="button"
-        >
-            <span class="icon">
-                <img src="assets/latex-logo.svg" alt="latex-logo" />
-            </span>
-            <span class="button-text" [class.invisible]="loading === 'tex'" i18n>Export to LaTeX</span>
-        </button>
-        <button
-            class="button pdf"
-            [class.is-loading]="loading === 'pdf'"
-            (click)="export('pdf')"
-            type="button"
-        >
-            <span class="icon">
-                <img src="assets/pdf-logo.svg" alt="pdf-logo" />
-            </span>
-            <span class="button-text" [class.invisible]="loading === 'pdf'" i18n>Export to PDF</span>
-        </button>
-        <button
-            class="button overleaf"
-            (click)="export('overleaf')"
-            type="button"
-        >
-            <span class="icon">
-                <img src="assets/overleaf-logo.svg" alt="overleaf-logo" />
-            </span>
-            <span class="button-text" i18n>Open in Overleaf</span>
-        </button>
+        <pp-export-button
+            buttonText="Export to LaTeX"
+            [isLoading]="loading === 'latex'"
+            (export)="export($event)"
+            mode="latex"
+            i18n-buttonText
+        />
+        <pp-export-button
+            buttonText="Export to PDF"
+            [isLoading]="loading === 'pdf'"
+            (export)="export($event)"
+            mode="pdf"
+            i18n-buttonText
+        />
+        <pp-export-button
+            buttonText="Open in Overleaf"
+            [isLoading]="loading === 'overleaf'"
+            (export)="export($event)"
+            textBelow="Requires an Overleaf account."
+            mode="overleaf"
+            i18n-buttonText
+            i18n-textBelow
+        />
+        <pp-export-button
+            buttonText="Export proof"
+            [isLoading]="loading === 'proof'"
+            (export)="export($event)"
+            mode="proof"
+            i18n-buttonText
+        />
     </div>
 
-    <div class="output-container" *ngIf="texOutput">
-        <button
-            class="button is-small clipboard-copy"
-            type="button"
-            (click)="copyToClipboard()"
-        >
-            <span class="icon">
-                <img src="assets/copy-clipboard.svg" alt="copy to clipboard"
-            /></span>
-            <span i18n>Copy to clipboard</span>
-        </button>
+    <div class="output-container" *ngIf="textOutput">
+        <div class="output-button-container">
+            <button
+                class="button is-small download-file" 
+                type="button"
+                (click)="downloadAsFile(textOutput.text, textOutput.extension)"
+            >
+                <span class="icon">
+                    <fa-icon [icon]="faDownload"></fa-icon>
+                </span>
+                <span i18n>Download as file</span>
+            </button>
+            <button
+                class="button is-small clipboard-copy"
+                type="button"
+                (click)="copyToClipboard(textOutput.text)"
+            >
+                <span class="icon">
+                    <fa-icon [icon]="faCopy"></fa-icon>
+                </span>
+                <span i18n>Copy text to clipboard</span>
+            </button>
+        </div>
         <pre
-            name="tex-output"
+            name="text-output"
             class="is-family-code"
-            [innerText]="texOutput"
+            [innerText]="textOutput.text"
             disabled
         ></pre>
     </div>

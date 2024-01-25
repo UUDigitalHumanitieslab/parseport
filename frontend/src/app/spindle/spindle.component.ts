@@ -1,13 +1,24 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { FormControl, Validators } from "@angular/forms";
 import { Subject, takeUntil } from "rxjs";
-import { ApiService, LexicalPhrase, SpindleMode } from "../shared/services/api.service";
+import {
+    ApiService,
+    LexicalPhrase,
+    SpindleMode,
+} from "../shared/services/api.service";
 import { ErrorHandlerService } from "../shared/services/error-handler.service";
 import { AlertService } from "../shared/services/alert.service";
 import { AlertType } from "../shared/components/alert/alert.component";
 
+import { faDownload, faCopy } from "@fortawesome/free-solid-svg-icons";
+
+interface TextOutput {
+    extension: "json" | "tex";
+    text: string;
+}
+
 @Component({
-    selector: "dh-spindle",
+    selector: "pp-spindle",
     templateUrl: "./spindle.component.html",
     styleUrls: ["./spindle.component.scss"],
 })
@@ -15,17 +26,20 @@ export class SpindleComponent implements OnInit, OnDestroy {
     spindleInput = new FormControl<string>("", {
         validators: [Validators.required],
     });
-    texOutput: string | null = null;
-    loading: SpindleMode | null = null;
     term: string | null = null;
+    textOutput: TextOutput | null = null;
     lexicalPhrases: LexicalPhrase[] = [];
+    loading: SpindleMode | null = null;
+
+    faCopy = faCopy;
+    faDownload = faDownload;
 
     private destroy$ = new Subject<void>();
 
     constructor(
         private apiService: ApiService,
         private alertService: AlertService,
-        private errorHandler: ErrorHandlerService,
+        private errorHandler: ErrorHandlerService
     ) {}
 
     ngOnInit(): void {
@@ -42,15 +56,30 @@ export class SpindleComponent implements OnInit, OnDestroy {
                     this.errorHandler.handleSpindleError(response.error);
                     return;
                 }
-                if (response.tex) {
-                    this.texOutput = response.tex;
+                if (response.latex) {
+                    this.textOutput = {
+                        extension: "tex",
+                        text: response.latex,
+                    };
                 }
                 if (response.redirect) {
                     // Opens a new tab.
                     window.open(response.redirect, "_blank");
                 }
                 if (response.pdf) {
-                    this.downloadPDF(response.pdf);
+                    const base64 = response.pdf;
+                    this.downloadAsFile(base64, "pdf");
+                }
+                if (response.term && response.lexical_phrases) {
+                    this.term = response.term;
+                    this.lexicalPhrases = response.lexical_phrases;
+                }
+                if (response.proof) {
+                    this.textOutput = {
+                        extension: "json",
+                        // The additional arguments are for pretty-printing.
+                        text: JSON.stringify(response.proof, null, 2),
+                    };
                 }
                 if (response.term && response.lexical_phrases) {
                     this.term = response.term;
@@ -59,8 +88,9 @@ export class SpindleComponent implements OnInit, OnDestroy {
             });
     }
 
-    parse() {
-        this.export('term-table');
+    parse(): void {
+        this.clearResults();
+        this.export("term-table");
     }
 
     get parsed(): boolean {
@@ -75,20 +105,15 @@ export class SpindleComponent implements OnInit, OnDestroy {
             return;
         }
         this.loading = mode;
-        this.texOutput = null;
-        this.apiService.spindleInput$.next({ mode, sentence: userInput });
+        this.apiService.spindleInput$.next({
+            mode,
+            sentence: userInput,
+        });
     }
 
-    copyToClipboard(): void {
-        if (!this.texOutput) {
-            this.alertService.alert$.next({
-                message: $localize`Failed to copy to clipboard.`,
-                type: AlertType.DANGER,
-            });
-            return;
-        }
+    copyToClipboard(text: string): void {
         navigator.clipboard
-            .writeText(this.texOutput)
+            .writeText(text)
             .then(() => {
                 this.alertService.alert$.next({
                     message: $localize`Copied to clipboard.`,
@@ -103,26 +128,47 @@ export class SpindleComponent implements OnInit, OnDestroy {
             });
     }
 
+    downloadAsFile(textData: string, extension: "tex" | "json" | "pdf"): void {
+        const fileName = "spindleParseResult." + extension;
+        let url = "";
+        // PDF data (base64) does not need to be converted to a blob.
+        if (extension === "pdf") {
+            url = `data:application/pdf;base64,${textData}`;
+        } else {
+            const blob = new Blob([textData], {
+                type: `application/${extension}`,
+            });
+            url = window.URL.createObjectURL(blob);
+        }
+
+        this.downloadFile(fileName, url);
+
+        // Revoke the object URL after downloading.
+        if (extension !== "pdf") {
+            this.revokeObjectURL(url);
+        }
+    }
+
     ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
     }
 
-    /**
-     * Creates an anchor element `<a></a>` with
-     * the base64 pdf source and a filename with the
-     * HTML5 `download` attribute then clicks on it.
-     * @param  {string} base64 The base64 pdf source
-     * @return {void}
-     */
-    private downloadPDF(base64: string): void {
-        const linkSource = `data:application/pdf;base64,${base64}`;
-        const downloadLink = document.createElement("a");
-        const fileName = "spindleParseResult.pdf";
+    private clearResults(): void {
+        this.term = null;
+        this.textOutput = null;
+        this.lexicalPhrases = [];
+    }
 
-        downloadLink.href = linkSource;
-        downloadLink.download = fileName;
-        downloadLink.click();
-        downloadLink.remove();
+    private downloadFile(fileName: string, url: string): void {
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        link.click();
+        link.remove();
+    }
+
+    private revokeObjectURL(url: string): void {
+        window.URL.revokeObjectURL(url);
     }
 }

@@ -84,6 +84,10 @@ export class SpindleComponent implements OnInit, OnDestroy {
                         text: this.JSONPipe.transform(response.proof)
                     }
                 }
+                if (response.term && response.lexical_phrases) {
+                    this.term = response.term;
+                    this.lexicalPhrases = response.lexical_phrases;
+                }
             });
     }
 
@@ -95,7 +99,7 @@ export class SpindleComponent implements OnInit, OnDestroy {
         return this.term !== null && this.lexicalPhrases.length > 0;
     }
 
-    export(mode: SpindleMode | null): void {
+    export(mode: SpindleMode): void {
         this.spindleInput.markAsTouched();
         this.spindleInput.updateValueAndValidity();
         const userInput = this.spindleInput.value;

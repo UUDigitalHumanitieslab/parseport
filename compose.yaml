@@ -1,35 +1,55 @@
-
 version: "3"
 
+x-dj-base: &base-dj
+    container_name: dj
+    build: ./backend
+    env_file: .env
+    ports:
+        - "8000:8000"
+
 services:
-  parseport:
-    build: .
-    image: parseport
+    ng:
+        container_name: ng
+        build:
+            context: frontend
+            args:
+                - CONFIGURATION=${CONFIGURATION}
+        ports:
+            - "8080:80"
 
-    volumes:
-      - ../:/data
-      - ./backend:/parseport
-      - ../../private:/private
+    # dj-dev:
+    #     <<: *base-dj
+    #     profiles: ["dev"]
+    #     command:
+    #         bash -c python manage.py runserver
+    #         # volumes:
+    #         #     - ../:/data
+    #         #     - ./backend:/src
+    #         #     - ../../private:/private
 
-    ports:
-      - "8000:8000"
+    # dj-prod:
+    #     <<: *base-dj
+    #     profiles: ["prod"]
+    #     command: gunicorn -b 0.0.0.0:8000 wsgi:application --pythonpath=/private
 
-    restart: always
+    # spindle:
+    #     build: ../spindle-server
+    #     expose:
+    #         - "32768"
+    #     # image: spindle-server
+    #     # restart: always
+    #     # ports:
+    #     #   - "32768:5000"
 
-  spindle:
-    build: ../spindle-server
-    image: spindle-server
+    # latex:
+    #     build: ../latex-service
+    #     image: latex-service
+    #     expose:
+    #         - "32769"
+    #     # restart: always
+    #     # ports:
+    #     #   - "32769:5000"
 
-    ports:
-      - "32768:5000"
-
-    restart: always
-
-  latex:
-    build: ../latex-service
-    image: latex-service
-
-    ports:
-      - "32769:5000"
-
-    restart: always
+networks:
+    parseport:
+        driver: bridge

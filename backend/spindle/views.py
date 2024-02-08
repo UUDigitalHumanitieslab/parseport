@@ -2,20 +2,32 @@ import base64
 import json
 import logging
 import urllib3
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
-from typing import Literal, Optional
+from typing import Literal, Optional, List
 from urllib.parse import quote
 
 from django.conf import settings
 from django.http import HttpRequest, JsonResponse
 from django.views import View
 
+from aethel.frontend import (
+    LexicalPhrase,
+    Proof,
+    json_to_serial_proof,
+    json_to_serial_phrase,
+    deserialize_proof,
+    deserialize_phrase,
+    serialize_proof,
+    serial_proof_to_json,
+)
+
 http = urllib3.PoolManager()
 
 
 # Output mode
-Mode = Literal["tex", "pdf", "overleaf"]
+Mode = Literal["latex", "pdf", "overleaf", "term-table", "proof"]
+
 
 
 class SpindleErrorSource(Enum):
@@ -25,22 +37,37 @@ class SpindleErrorSource(Enum):
     GENERAL = "general"
 
 
+# Should correspond with SpindleReturn interface in frontend.
 @dataclass
 class SpindleResponse:
-    tex: Optional[str] = None
+    latex: Optional[str] = None
     pdf: Optional[str] = None
     redirect: Optional[str] = None
     error: Optional[SpindleErrorSource] = None
+    term: Optional[str] = None
+    lexical_phrases: List[dict] = field(default_factory=list)
+    proof: Optional[dict] = None
 
     def json_response(self) -> JsonResponse:
+        # TODO: set HTTP error code when error is not None
         return JsonResponse(
             {
-                "tex": self.tex,
+                "latex": self.latex,
                 "pdf": self.pdf,
                 "redirect": self.redirect,
                 "error": self.error.value if self.error else None,
+                "term": self.term,
+                "lexical_phrases": self.lexical_phrases,
+                "proof": self.proof,
             }
         )
+
+
+@dataclass
+class ParserResponse:
+    tex: str
+    proof: Proof
+    lexical_phrases: List[LexicalPhrase]
 
 
 class SpindleView(View):
@@ -49,23 +76,27 @@ class SpindleView(View):
         if data is None:
             return SpindleResponse(error=SpindleErrorSource.INPUT).json_response()
 
-        tex = self.send_to_parser(data)
-        if tex is None:
+        parsed = self.send_to_parser(data)
+        if parsed is None:
             return SpindleResponse(error=SpindleErrorSource.SPINDLE).json_response()
 
-        if mode == "tex":
-            return self.latex_response(tex)
+        if mode == "latex":
+            return self.latex_response(parsed.tex)
         elif mode == "pdf":
-            return self.pdf_response(tex)
+            return self.pdf_response(parsed.tex)
         elif mode == "overleaf":
-            return self.overleaf_redirect(tex)
+            return self.overleaf_redirect(parsed.tex)
+        elif mode == "term-table":
+            return self.term_table_response(parsed)
+        elif mode == "proof":
+            return self.proof_response(parsed)
 
         # Only if the query param is not a valid mode
         # This should never happen.
         logging.warn("Received unexpected mode.")
         return SpindleResponse(error=SpindleErrorSource.GENERAL).json_response()
 
-    def send_to_parser(self, text: str) -> Optional[str]:
+    def send_to_parser(self, text: str) -> Optional[ParserResponse]:
         """Send request to downstream (natural language) parser"""
         # Sending data to Spindle container.
         spindle_response = http.request(
@@ -79,24 +110,30 @@ class SpindleView(View):
             logging.warn(
                 "Received non-200 response from Spindle server for input %s", text
             )
-            return
+            return None
 
         try:
             spindle_response_json = spindle_response.json()
         except json.JSONDecodeError as e:
             logging.warn("Spindle response is not JSON parseable: %s", e.msg)
-            return
+            return None
 
-        # Check if the spindle response has a key called "results" and if it is a string.
-        if "results" in spindle_response_json and isinstance(
-            spindle_response_json["results"], str
-        ):
-            return spindle_response_json["results"]
-
-        logging.warn(
-            "Spindle response does not contain valid 'results': %s",
-            json.dumps(spindle_response_json),
-        )
+        try:
+            return ParserResponse(
+                tex=spindle_response_json["tex"],
+                proof=deserialize_proof(
+                    json_to_serial_proof(spindle_response_json["proof"])
+                ),
+                lexical_phrases=[
+                    deserialize_phrase(json_to_serial_phrase(phrase))
+                    for phrase in spindle_response_json["lexical_phrases"]
+                ],
+            )
+        except:
+            logging.exception(
+                "Spindle response does not contain valid 'results': %s",
+                json.dumps(spindle_response_json),
+            )
 
     def read_request(self, request: HttpRequest) -> Optional[str]:
         """Read and validate the HTTP request received from the frontend"""
@@ -114,22 +151,22 @@ class SpindleView(View):
 
         return parsed_json["input"]
 
-    def latex_response(self, tex: str) -> JsonResponse:
+    def latex_response(self, latex: str) -> JsonResponse:
         """Return LaTeX code immediately."""
-        return SpindleResponse(tex=tex).json_response()
+        return SpindleResponse(latex=latex).json_response()
 
-    def pdf_response(self, tex) -> JsonResponse:
+    def pdf_response(self, latex: str) -> JsonResponse:
         """Forward LaTeX code to LaTeX service. Return PDF"""
         latex_response = http.request(
             method="POST",
             url=settings.LATEX_SERVICE_URL,
-            body=tex,
+            body=latex,
             headers={"Content-Type": "application/tex"},
         )
 
         if latex_response.status != 200:
             logging.warn(
-                "Received non-200 response from LaTeX server for input %s", tex
+                "Received non-200 response from LaTeX server for input %s", latex
             )
             return SpindleResponse(error=SpindleErrorSource.LATEX).json_response()
 
@@ -143,10 +180,23 @@ class SpindleView(View):
 
         # PDF generated succesfully
         pdf_base64_string = base64.b64encode(pdf).decode("utf-8")
-        return SpindleResponse(tex=tex, pdf=pdf_base64_string).json_response()
+        return SpindleResponse(latex=latex, pdf=pdf_base64_string).json_response()
 
-    def overleaf_redirect(self, tex: str) -> JsonResponse:
+    def overleaf_redirect(self, latex: str) -> JsonResponse:
         """Compose a link to Overleaf."""
         # quote() is used to escape special characters.
-        redirect_url = f"https://www.overleaf.com/docs?snip={quote(tex)}"
+        redirect_url = f"https://www.overleaf.com/docs?snip={quote(latex)}"
         return SpindleResponse(redirect=redirect_url).json_response()
+
+    def term_table_response(self, parsed: ParserResponse) -> JsonResponse:
+        """Return the term and the lexical phrases as a JSON response."""
+        return SpindleResponse(
+            term=str(parsed.proof.term),
+            lexical_phrases=[phrase.json() for phrase in parsed.lexical_phrases],
+        ).json_response()
+
+    def proof_response(self, parsed: ParserResponse) -> JsonResponse:
+        """Return the proof as a JSON response."""
+        return SpindleResponse(
+            proof=serial_proof_to_json(serialize_proof(parsed.proof))
+        ).json_response()

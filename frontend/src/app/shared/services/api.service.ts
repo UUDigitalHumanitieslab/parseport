@@ -12,14 +12,30 @@ export const enum SpindleErrorSource {
     GENERAL = "general",
 }
 
+type LexicalItem = {
+    word: string;
+    pos: string;
+    pt: string;
+    lemma: string;
+};
+
+export type LexicalPhrase = {
+    items: LexicalItem[];
+    type: string;
+};
+
+// Should correspond with SpindleResponse dataclass in backend.
 export interface SpindleReturn {
-    error?: SpindleErrorSource;
-    tex?: string;
-    pdf?: string;
-    redirect?: string;
+    error: SpindleErrorSource | null;
+    latex: string | null;
+    pdf: string | null;
+    redirect: string | null;
+    term: string | null;
+    lexical_phrases: LexicalPhrase[];
+    proof: Record<string, unknown> | null;
 }
 
-export type SpindleMode = "tex" | "pdf" | "overleaf";
+export type SpindleMode = "latex" | "pdf" | "overleaf" | "term-table" | "proof";
 
 export interface SpindleInput {
     sentence: string;

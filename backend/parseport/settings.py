@@ -127,5 +127,8 @@ CORS_ORIGIN_WHITELIST = [
     "http://localhost:8080",  # From the container
 ]
 
-SPINDLE_URL = "http://localhost:32768/"
-LATEX_SERVICE_URL = "http://localhost:32769/"
+SPINDLE_PORT = os.getenv("SPINDLE_PORT", "32768")
+LATEX_PORT = os.getenv("LATEX_PORT", "32769")
+
+SPINDLE_URL = f"http://spindle:{SPINDLE_PORT}/"
+LATEX_SERVICE_URL = f"http://latex:{LATEX_PORT}/"

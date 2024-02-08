@@ -33,25 +33,27 @@ services:
     #     profiles: ["prod"]
     #     command: gunicorn -b 0.0.0.0:8000 wsgi:application --pythonpath=/private
 
-    # spindle:
-    #     container_name: spindle
-    #     build: ../spindle-server
-    #     expose:
-    #         - "32768"
-    #     # image: spindle-server
-    #     # restart: always
-    #     # ports:
-    #     #   - "32768:5000"
+    spindle:
+        container_name: spindle
+        build:
+            context: ../spindle-server
+            args:
+                - SPINDLE_PORT=${SPINDLE_PORT}
+        expose:
+            - ${SPINDLE_PORT}
+        restart: always
+        # image: spindle-server
 
-    # latex:
-    #     container_name: latex
-    #     build: ../latex-service
-    #     image: latex-service
-    #     expose:
-    #         - "32769"
-    #     # restart: always
-    #     # ports:
-    #     #   - "32769:5000"
+    latex:
+        container_name: latex
+        build:
+            context: ../latex-service
+            args:
+                - LATEX_PORT=${LATEX_PORT}
+        image: latex-service
+        expose:
+            - ${LATEX_PORT}
+        # restart: always
 
 networks:
     parseport:

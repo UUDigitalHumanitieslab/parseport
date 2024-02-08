@@ -17,15 +17,16 @@ services:
         ports:
             - "8080:80"
 
-    # dj-dev:
-    #     <<: *base-dj
-    #     profiles: ["dev"]
-    #     command:
-    #         bash -c python manage.py runserver
-    #         # volumes:
-    #         #     - ../:/data
-    #         #     - ./backend:/src
-    #         #     - ../../private:/private
+    dj-dev:
+        <<: *base-dj
+        profiles: ["dev"]
+        command: python manage.py runserver 0.0.0.0:8000
+        volumes:
+            - ./backend:/src
+        # volumes:
+        #     - ../:/data
+        #     - ./backend:/src
+        #     - ../../private:/private
 
     # dj-prod:
     #     <<: *base-dj
@@ -33,6 +34,7 @@ services:
     #     command: gunicorn -b 0.0.0.0:8000 wsgi:application --pythonpath=/private
 
     # spindle:
+    #     container_name: spindle
     #     build: ../spindle-server
     #     expose:
     #         - "32768"
@@ -42,6 +44,7 @@ services:
     #     #   - "32768:5000"
 
     # latex:
+    #     container_name: latex
     #     build: ../latex-service
     #     image: latex-service
     #     expose:

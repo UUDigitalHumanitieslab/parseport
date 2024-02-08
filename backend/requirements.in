@@ -6,3 +6,4 @@ psycopg2 --no-binary psycopg2
 pytest
 pytest-django
 pytest-xdist
+django-cors-headers==4.3.1

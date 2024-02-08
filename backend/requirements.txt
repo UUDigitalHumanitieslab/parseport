@@ -63,3 +63,4 @@ tzdata==2023.3
     # via django
 urllib3==2.0.4
     # via django-revproxy
+django-cors-headers==4.3.1

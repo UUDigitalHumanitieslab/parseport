@@ -9,9 +9,6 @@ WORKDIR /angular-app
 # Copy app dependencies
 COPY package.json yarn.lock /angular-app/
 
-# Install Yarn
-# RUN npm install -g yarn
-
 # Install app dependencies
 RUN yarn install
 
@@ -22,13 +19,13 @@ COPY . /angular-app
 ARG CONFIGURATION=production
 
 # Build app
-RUN npm run build build -- --output-path=./dist/out --configuration $CONFIGURATION
+RUN npm run build -- --output-path=./dist/out --configuration $CONFIGURATION
 
 # Setup NGINX to serve the app
 FROM nginx:alpine
 
 # Copy the built app to the NGINX server
-COPY --from=builder /angular-app/dist/out/browser /usr/share/nginx/html
+COPY --from=builder /angular-app/dist/out/ /usr/share/nginx/html
 
 # Copy the NGINX configuration file
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf

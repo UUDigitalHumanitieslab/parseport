@@ -23,9 +23,6 @@ SECRET_KEY = "kxreeb3bds$oibo7ex#f3bi5r+d(1x5zljo-#ms=i2%ih-!pvn"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "http://localhost:4200"]
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -39,13 +36,18 @@ INSTALLED_APPS = [
     "rest_framework",
     "revproxy",
     "example",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
+
+    # NOTE: CSRF is disabled; since we are not using authentication.
+    # "django.middleware.csrf.CsrfViewMiddleware",
+
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -74,7 +76,7 @@ WSGI_APPLICATION = "parseport.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": "."}}
+DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": "./sqlite.db"}}
 
 
 # Password validation
@@ -116,7 +118,14 @@ USE_TZ = True
 STATIC_URL = "/static/"
 
 STATICFILES_DIRS = []
-PROXY_FRONTEND = None
+
+ALLOWED_HOSTS = []
+
+# Temporarily!
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:4200",  # From local dev server
+    "http://localhost:8080",  # From the container
+]
 
 SPINDLE_URL = "http://localhost:32768/"
 LATEX_SERVICE_URL = "http://localhost:32769/"

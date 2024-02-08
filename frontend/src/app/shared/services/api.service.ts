@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { ErrorHandlerService } from "./error-handler.service";
 import { Observable, Subject, catchError, of, switchMap } from "rxjs";
+import { environment } from "src/environments/environment";
 
 // This should be the same as the one in the backend.
 export const enum SpindleErrorSource {
@@ -41,7 +42,7 @@ export class ApiService {
             switchMap((input) =>
                 this.http
                     .post<SpindleReturn | null>(
-                        `/api/spindle/${input.mode}`,
+                        `${environment.apiUrl}${input.mode}`,
                         { input: input.sentence },
                         {
                             headers: new HttpHeaders({

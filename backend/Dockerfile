@@ -18,8 +18,5 @@ WORKDIR /src
 
 COPY . /src/
 
-# Set build-time variables
-ARG CONFIGURATION=production
-
 # Expose port
 EXPOSE 8000

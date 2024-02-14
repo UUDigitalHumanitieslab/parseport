@@ -2,35 +2,64 @@
 
 [![Actions Status](https://github.com/UUDigitalHumanitieslab/parseport/workflows/Unit%20tests/badge.svg)](https://github.com/UUDigitalHumanitieslab/parseport/actions)
 
-Dutch sentence parser for Spindle + Æthel (and maybe others in the future)...
+ParsePort is an interface for the [Spindle](https://github.com/konstantinosKokos/spindle) parser using the [Æthel](https://github.com/konstantinosKokos/aethel) library, both developed by dr. Konstantinos Kogkalidis as part of a research project conducted with prof. dr. Michaël Moortgat at Utrecht University. Other parsers may be added in the future.
 
+## Running this application in Docker
+
+All you need to run this application is a working installation of Docker and an internet connection.
+
+You will also need to add a configuration file called `.env` to the root directory of this project with at least the following settings.
+
+```
+CONFIGURATION=...
+DJANGO_SECRET_KEY=...
+SPINDLE_PORT=...
+LATEX_PORT=...
+```
+
+`ENVIRONMENT` should be set to either `production` or `development` (default `production`).
+
+This application can be run in both `production` and `development` mode. In either mode, four containers will be created in a Docker Compose network.
+
+Start the Docker network in **development mode** by running the following command in your terminal.
+
+```
+docker compose --profile dev up --build -d
+```
+
+For **production mode**, run the following instead.
+
+```
+docker compose --profile prod up --build -d
+```
+
+Open your browser and visit your project at http://localhost:8080.
 
 ## Before you start
 
 You need to install the following software:
 
- - PostgreSQL >= 10, client, server and C libraries
- - Python >= 3.8, <= 3.10
- - virtualenv
- - WSGI-compatible webserver (deployment only)
- - [Visual C++ for Python][1] (Windows only)
- - Node.js >= 14.20.0
- - Yarn
- - [WebDriver][2] for at least one browser (only for functional testing)
+-   PostgreSQL >= 10, client, server and C libraries
+-   Python >= 3.8, <= 3.10
+-   virtualenv
+-   WSGI-compatible webserver (deployment only)
+-   [Visual C++ for Python][1] (Windows only)
+-   Node.js >= 14.20.0
+-   Yarn
+-   [WebDriver][2] for at least one browser (only for functional testing)
 
 [1]: https://wiki.python.org/moin/WindowsCompilers
 [2]: https://pypi.org/project/selenium/#drivers
-
 
 ## How it works
 
 This project integrates three isolated subprojects, each inside its own subdirectory with its own code, package dependencies and tests:
 
- - **backend**: the server side web application based on [Django][3] and [DRF][4]
- 
- - **frontend**: the client side web application based on [Angular](https://angular.io)
- 
- - **functional-tests**: the functional test suite based on [Selenium][6] and [pytest][7]
+-   **backend**: the server side web application based on [Django][3] and [DRF][4]
+
+-   **frontend**: the client side web application based on [Angular](https://angular.io)
+
+-   **functional-tests**: the functional test suite based on [Selenium][6] and [pytest][7]
 
 [3]: https://www.djangoproject.com
 [4]: https://www.django-rest-framework.org
@@ -40,7 +69,6 @@ This project integrates three isolated subprojects, each inside its own subdirec
 Each subproject is configurable from the outside. Integration is achieved using "magic configuration" which is contained inside the root directory together with this README. In this way, the subprojects can stay truly isolated from each other.
 
 If you are reading this README, you'll likely be working with the integrated project as a whole rather than with one of the subprojects in isolation. In this case, this README should be your primary source of information on how to develop or deploy the project. However, we recommend that you also read the "How it works" section in the README of each subproject.
-
 
 ## Development
 
@@ -62,34 +90,32 @@ This will run the backend and frontend applications, as well as their unittests,
 
 [8]: #development-mode-vs-production-mode
 
-
 ### Recommended order of development
 
 For each new feature, we suggested that you work through the steps listed below. This could be called a back-to-front or "bottom up" order. Of course, you may have reasons to choose otherwise. For example, if very precise specifications are provided, you could move step 8 to the front for a more test-driven approach.
 
 Steps 1–5 also include updating the unittests. Only functions should be tested, especially critical and nontrivial ones.
 
- 1. Backend model changes including migrations.
- 2. Backend serializer changes and backend admin changes.
- 3. Backend API endpoint changes.
- 4. Frontend model changes.
- 5. Other frontend unit changes (templates, views, routers, FSMs).
- 6. Frontend integration (globals, event bindings).
- 7. Run functional tests, repair broken functionality and broken tests.
- 8. [Add functional tests][9] for the new feature.
- 9. Update technical documentation.
+1.  Backend model changes including migrations.
+2.  Backend serializer changes and backend admin changes.
+3.  Backend API endpoint changes.
+4.  Frontend model changes.
+5.  Other frontend unit changes (templates, views, routers, FSMs).
+6.  Frontend integration (globals, event bindings).
+7.  Run functional tests, repair broken functionality and broken tests.
+8.  [Add functional tests][9] for the new feature.
+9.  Update technical documentation.
 
 [9]: functional-tests/README.md#writing-tests
 
 For release branches, we suggest the following checklist.
 
- 1. Bump the version number in the `package.json` next to this README.
- 2. Run the functional tests in production mode, fix bugs if necessary.
- 3. Try using the application in production mode, look for problems that may have escaped the tests.
- 4. Add regression tests (unit or functional) that detect problems from step 3.
- 5. Work on the code until new regression tests from step 4 pass.
- 6. Optionally, repeat steps 2–5 with the application running in a real deployment setup (see [Deployment](#deployment)).
-
+1.  Bump the version number in the `package.json` next to this README.
+2.  Run the functional tests in production mode, fix bugs if necessary.
+3.  Try using the application in production mode, look for problems that may have escaped the tests.
+4.  Add regression tests (unit or functional) that detect problems from step 3.
+5.  Work on the code until new regression tests from step 4 pass.
+6.  Optionally, repeat steps 2–5 with the application running in a real deployment setup (see [Deployment](#deployment)).
 
 ### Commands for common tasks
 
@@ -118,7 +144,7 @@ The functional test suite by default assumes that you have the application runni
 [10]: functional-tests/README.md#configuring-the-browsers
 [11]: functional-tests/README.md#configuring-the-base-address
 
-Run *all* tests (mostly useful for continuous integration):
+Run _all_ tests (mostly useful for continuous integration):
 
 ```console
 $ yarn test [FUNCTIONAL TEST OPTIONS]
@@ -160,8 +186,6 @@ Manage the frontend package dependencies:
 $ yarn fyarn (add|remove|upgrade|...) (PACKAGE ...) [OPTIONS]
 ```
 
-
-
 ### Notes on Python package dependencies
 
 Both the backend and the functional test suite are Python-based and package versions are pinned using [pip-tools][13] in both subprojects. For ease of development, you most likely want to use the same virtualenv for both and this is also what the `bootstrap.py` assumes.
@@ -178,23 +202,21 @@ $ yarn back pip-compile
 $ yarn func pip-compile
 ```
 
-
 ### Development mode vs production mode
 
 The purpose of development mode is to facilitate live development, as the name implies. The purpose of production mode is to simulate deployment conditions as closely as possible, in order to check whether everything still works under such conditions. A complete overview of the differences is given below.
 
-dimension  |  Development mode  |  Production mode
------------|--------------------|-----------------
-command  |  `yarn start`  |  `yarn start-p`
-base address  |  http://localhost:8000  |  http://localhost:4200
-backend server (Django)  |  in charge of everything  |  serves backend only
-frontend server (angular-cli)  |  serves  |  watch and build
-static files  |  served directly by Django's staticfiles app  |  collected by Django, served by gulp-connect
-backend `DEBUG` setting  |  `True`  |  `False`
-backend `ALLOWED_HOSTS`  |  -  |  restricted to `localhost`
-frontend sourcemaps  |  yes  |  no
-frontend optimization  |  no  |  yes
-
+| dimension                     | Development mode                            | Production mode                             |
+| ----------------------------- | ------------------------------------------- | ------------------------------------------- |
+| command                       | `yarn start`                                | `yarn start-p`                              |
+| base address                  | http://localhost:8000                       | http://localhost:4200                       |
+| backend server (Django)       | in charge of everything                     | serves backend only                         |
+| frontend server (angular-cli) | serves                                      | watch and build                             |
+| static files                  | served directly by Django's staticfiles app | collected by Django, served by gulp-connect |
+| backend `DEBUG` setting       | `True`                                      | `False`                                     |
+| backend `ALLOWED_HOSTS`       | -                                           | restricted to `localhost`                   |
+| frontend sourcemaps           | yes                                         | no                                          |
+| frontend optimization         | no                                          | yes                                         |
 
 ## Deployment
 

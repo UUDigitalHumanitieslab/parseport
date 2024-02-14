@@ -7,4 +7,4 @@ pytest
 pytest-django
 pytest-xdist
 django-cors-headers==4.3.1
--e git+https://github.com/konstantinosKokos/aethel@stable#egg=aethel
+aethel @ git+https://github.com/konstantinosKokos/aethel@stable#egg=aethel

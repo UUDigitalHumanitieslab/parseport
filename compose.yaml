@@ -1,32 +1,37 @@
 version: "3"
 
-x-dj-base: &base-dj
-    container_name: dj
-    build: ./backend
-    env_file: .env
-    ports:
-        - "8000:8000"
-
 services:
-    ng:
-        container_name: ng
-        build:
-            context: frontend
-            args:
-                - CONFIGURATION=${CONFIGURATION}
+    nginx:
+        container_name: nginx
+        image: nginx:latest
+        volumes: 
+            - ./nginx.conf:/etc/nginx/nginx.conf
         ports:
-            - "8080:80"
+            - "5000:80"
+
+    ng-dev:
+        image: ng-dev
+        container_name: parseport-ng
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile.dev
+        command: ng serve --host 0.0.0.0 --poll 200 --disable-host-check
+        expose:
+            - "4200"
+        volumes:
+            - ./frontend:/app
 
     dj-dev:
-        <<: *base-dj
+        image: dj-dev
+        container_name: parseport-dj
+        build: backend
+        env_file: .env
         profiles: ["dev"]
         command: python manage.py runserver 0.0.0.0:8000
+        expose:
+            - "8000"
         volumes:
             - ./backend:/src
-        # volumes:
-        #     - ../:/data
-        #     - ./backend:/src
-        #     - ../../private:/private
 
     # dj-prod:
     #     <<: *base-dj
@@ -35,17 +40,17 @@ services:
 
     spindle:
         container_name: spindle
+        restart: always
         build:
             context: ../spindle-server
             args:
                 - SPINDLE_PORT=${SPINDLE_PORT}
         expose:
             - ${SPINDLE_PORT}
-        restart: always
-        # image: spindle-server
 
     latex:
         container_name: latex
+        restart: always
         build:
             context: ../latex-service
             args:
@@ -53,7 +58,6 @@ services:
         image: latex-service
         expose:
             - ${LATEX_PORT}
-        # restart: always
 
 networks:
     parseport:

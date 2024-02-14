@@ -14,7 +14,6 @@ COPY requirements.txt /
 RUN pip install --no-cache-dir -r /requirements.txt
 
 # Set working directory
-RUN mkdir /src
 WORKDIR /src
 
 COPY . /src/

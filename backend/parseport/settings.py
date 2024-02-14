@@ -119,7 +119,7 @@ STATIC_URL = "/static/"
 
 STATICFILES_DIRS = []
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['parseport-dj']
 
 # Temporarily!
 CORS_ORIGIN_WHITELIST = [

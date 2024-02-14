@@ -5,26 +5,18 @@ x-spindle-base: &spindle-base
     restart: always
     build:
         context: ../spindle-server
-        args:
-            - SPINDLE_PORT=${SPINDLE_PORT}
-    expose:
-        - ${SPINDLE_PORT}
 
 x-latex-base: &latex-base
     image: latex-service
     restart: always
     build:
         context: ../latex-service
-        args:
-            - LATEX_PORT=${LATEX_PORT}
-    expose:
-        - ${LATEX_PORT}
 
 services:
     nginx:
         container_name: nginx
         image: nginx:latest
-        volumes: 
+        volumes:
             - ./nginx.conf:/etc/nginx/nginx.conf
         ports:
             - "5000:80"
@@ -41,7 +33,7 @@ services:
             - "4200"
         volumes:
             - ./frontend:/app
-    
+
     ng-prod:
         image: ng-prod
         container_name: parseport-ng
@@ -49,8 +41,6 @@ services:
         build:
             context: ./frontend
             dockerfile: Dockerfile.prod
-        ports:
-            - "4200"
 
     dj-dev:
         image: dj-dev
@@ -64,13 +54,14 @@ services:
         volumes:
             - ./backend:/src
 
+    # TODO: the log files should be placed inside a volume, so they are persisted on the host
     dj-prod:
         image: dj-prod
         container_name: parseport-dj
         profiles: ["prod"]
         build: backend
-        env_file: .env
-        command: gunicorn -b 0.0.0.0:8000 wsgi:application --pythonpath=parseport
+        env_file: env
+        command: gunicorn -b 0.0.0.0:8000 wsgi:application --pythonpath=parseport --capture-output --access-logfile access_log --error-logfile error_log
         expose:
             - "8000"
         volumes:
@@ -82,11 +73,12 @@ services:
         profiles: ["dev"]
         command: flask run --host=0.0.0.0
 
+    # TODO: the log files should be placed inside a volume, so they are persisted on the host
     spindle-prod:
         <<: *spindle-base
         container_name: parseport-spindle
         profiles: ["prod"]
-        command: gunicorn -w 4 -b 0.0.0.0 'app:app' --timeout 600
+        command: gunicorn -w 1 -b 0.0.0.0 'app:create_app()' --timeout 600 --capture-output --access-logfile access_log --error-logfile error_log
 
     latex-dev:
         <<: *latex-base
@@ -94,11 +86,12 @@ services:
         profiles: ["dev"]
         command: flask run --host=0.0.0.0
 
+    # TODO: the log files should be placed inside a volume, so they are persisted on the host
     latex-prod:
         <<: *latex-base
         container_name: parseport-latex
         profiles: ["prod"]
-        command: gunicorn -w 4 -b 0.0.0.0 'app:app'
+        command: gunicorn -w 1 -b 0.0.0.0 'app:app' --capture-output --access-logfile access_log --error-logfile error_log
 
 networks:
     parseport:

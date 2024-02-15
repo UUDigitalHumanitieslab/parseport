@@ -7,7 +7,7 @@ export const environment = {
     production: false,
     // URL path prefix for assets
     assets: "assets",
-    apiUrl: "http://localhost:5000/api/spindle/",
+    apiUrl: "/api/spindle/",
     buildTime,
     version,
     sourceUrl,

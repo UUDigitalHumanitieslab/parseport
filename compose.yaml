@@ -24,6 +24,7 @@ services:
 
     ng-prod:
         image: pp-ng-prod
+        container_name: pp-ng
         profiles: ["prod"]
         build:
             context: ./frontend
@@ -60,7 +61,7 @@ services:
             context: ../spindle-server
         profiles: ["prod"]
         restart: always
-        command: gunicorn -w 1 -b 0.0.0.0 'app:create_app()' --timeout 600 --capture-output --access-logfile /logs/access_log --error-logfile /logs/error_log
+        command: gunicorn -w 1 -b 0.0.0.0:32768 'app:create_app()' --timeout 600 --capture-output --access-logfile /logs/access_log --error-logfile /logs/error_log
         expose:
             - "32768"
         volumes:
@@ -79,7 +80,7 @@ services:
             context: ../latex-service
         profiles: ["prod"]
         restart: always
-        command: gunicorn -w 1 -b 0.0.0.0 'app:app' --capture-output --access-logfile /logs/access_log --error-logfile /logs/error_log
+        command: gunicorn -w 1 -b 0.0.0.0:32769 'app:app' --capture-output --access-logfile /logs/access_log --error-logfile /logs/error_log
         expose:
             - "32769"
         volumes:

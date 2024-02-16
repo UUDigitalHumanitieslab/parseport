@@ -6,20 +6,41 @@ ParsePort is an interface for the [Spindle](https://github.com/konstantinosKokos
 
 ## Running this application in Docker
 
-All you need to run this application is a working installation of Docker and an internet connection.
+In order to run this application you need a working installation of Docker and an internet connection. You will also need the source code from two other repositories, `spindle-server` and `latex-service` to be present in the same directory as the `parseport` source code.
 
-You will also need to add a configuration file called `.env` to the root directory of this project with at least the following settings.
+In addition, you need to add a configuration file named `.env` to the root directory of this project with at least the following setting.
 
 ```
-CONFIGURATION=...
 DJANGO_SECRET_KEY=...
-SPINDLE_PORT=...
-LATEX_PORT=...
 ```
 
-`ENVIRONMENT` should be set to either `production` or `development` (default `production`).
+In overview, your file structure should be as follows.
 
-This application can be run in both `production` and `development` mode. In either mode, four containers will be created in a Docker Compose network.
+```
+├── spindle-server
+|   └── Dockerfile
+|
+├── latex-service
+|   └── Dockerfile
+|
+└── parseport (this project)
+    ├── compose.yaml
+    ├── .env
+    ├── frontend
+    |   └── Dockerfile
+    └── backend
+        └── Dockerfile
+```
+
+This application can be run in both `production` and `development` mode. Either mode will start a network of five containers.
+
+| Name         | Description                                       |
+|--------------|---------------------------------------------------|
+| `nginx`      | Entry point and reverse proxy, exposes port 5000. |
+| `pp-ng`      | The frontend server (Angular).                    |
+| `pp-dj`      | The backend/API server (Django).                  |
+| `pp-spindle` | The server hosting the Spindle parser.            |
+| `pp-latex`   | The server hosting a LaTeX compiler.              |
 
 Start the Docker network in **development mode** by running the following command in your terminal.
 
@@ -33,7 +54,11 @@ For **production mode**, run the following instead.
 docker compose --profile prod up --build -d
 ```
 
-Open your browser and visit your project at http://localhost:8080.
+The Spindle server needs to download several files before the parser is ready to receive. You should wait a few minutes until the message *App is ready!* appears in the Spindle container logs.
+
+Open your browser and visit your project at http://localhost:5000 to view the application.
+
+
 
 ## Before you start
 

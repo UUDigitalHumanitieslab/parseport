@@ -1,17 +1,5 @@
 version: "3"
 
-x-spindle-base: &spindle-base
-    image: spindle
-    restart: always
-    build:
-        context: ../spindle-server
-
-x-latex-base: &latex-base
-    image: latex-service
-    restart: always
-    build:
-        context: ../latex-service
-
 services:
     nginx:
         container_name: nginx
@@ -22,8 +10,8 @@ services:
             - "5000:80"
 
     ng-dev:
-        image: ng-dev
-        container_name: parseport-ng
+        image: pp-ng-dev
+        container_name: pp-ng
         profiles: ["dev"]
         build:
             context: ./frontend
@@ -35,64 +23,79 @@ services:
             - ./frontend:/app
 
     ng-prod:
-        image: ng-prod
-        container_name: parseport-ng
+        image: pp-ng-prod
         profiles: ["prod"]
         build:
             context: ./frontend
             dockerfile: Dockerfile.prod
 
-    dj-dev:
-        image: dj-dev
-        container_name: parseport-dj
-        profiles: ["dev"]
+    dj-prod: &dj-prod
+        image: pp-dj-prod
+        container_name: pp-dj
         build: backend
-        env_file: .env
-        command: python manage.py runserver 0.0.0.0:8000
-        expose:
-            - "8000"
-        volumes:
-            - ./backend:/src
-
-    # TODO: the log files should be placed inside a volume, so they are persisted on the host
-    dj-prod:
-        image: dj-prod
-        container_name: parseport-dj
         profiles: ["prod"]
-        build: backend
-        env_file: env
-        command: gunicorn -b 0.0.0.0:8000 wsgi:application --pythonpath=parseport --capture-output --access-logfile access_log --error-logfile error_log
+        environment:
+            - DJANGO_DEBUG=0
+            - DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY
+        command: gunicorn -b 0.0.0.0:8000 wsgi:application --pythonpath=parseport --capture-output --access-logfile /logs/access_log --error-logfile /logs/error_log
         expose:
             - "8000"
         volumes:
             - ./backend:/src
+            - pp-dj-logs:/logs
+
+    dj-dev:
+        <<: *dj-prod
+        image: pp-dj-dev
+        profiles: ["dev"]
+        environment:
+            - DJANGO_DEBUG=1
+            - DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY
+        command: python manage.py runserver 0.0.0.0:8000
+
+    spindle-prod: &spindle-prod
+        image: pp-spindle-prod
+        container_name: pp-spindle
+        build:
+            context: ../spindle-server
+        profiles: ["prod"]
+        restart: always
+        command: gunicorn -w 1 -b 0.0.0.0 'app:create_app()' --timeout 600 --capture-output --access-logfile /logs/access_log --error-logfile /logs/error_log
+        expose:
+            - "32768"
+        volumes:
+            - pp-spindle-logs:/logs
 
     spindle-dev:
-        <<: *spindle-base
-        container_name: parseport-spindle
+        <<: *spindle-prod
+        image: pp-spindle-dev
         profiles: ["dev"]
         command: flask run --host=0.0.0.0
 
-    # TODO: the log files should be placed inside a volume, so they are persisted on the host
-    spindle-prod:
-        <<: *spindle-base
-        container_name: parseport-spindle
+    latex-prod: &latex-prod
+        image: pp-latex-prod
+        container_name: pp-latex
+        build:
+            context: ../latex-service
         profiles: ["prod"]
-        command: gunicorn -w 1 -b 0.0.0.0 'app:create_app()' --timeout 600 --capture-output --access-logfile access_log --error-logfile error_log
+        restart: always
+        command: gunicorn -w 1 -b 0.0.0.0 'app:app' --capture-output --access-logfile /logs/access_log --error-logfile /logs/error_log
+        expose:
+            - "32769"
+        volumes:
+            - pp-latex-logs:/logs
 
     latex-dev:
-        <<: *latex-base
-        container_name: parseport-latex
+        <<: *latex-prod
+        image: pp-latex-dev
         profiles: ["dev"]
         command: flask run --host=0.0.0.0
-
-    # TODO: the log files should be placed inside a volume, so they are persisted on the host
-    latex-prod:
-        <<: *latex-base
-        container_name: parseport-latex
-        profiles: ["prod"]
-        command: gunicorn -w 1 -b 0.0.0.0 'app:app' --capture-output --access-logfile access_log --error-logfile error_log
 
 networks:
     parseport:
         driver: bridge
+
+volumes:
+    pp-dj-logs:
+    pp-latex-logs:
+    pp-spindle-logs:

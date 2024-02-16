@@ -18,10 +18,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "kxreeb3bds$oibo7ex#f3bi5r+d(1x5zljo-#ms=i2%ih-!pvn"
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-1234567890')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DJANGO_DEBUG', True) == 1
 
 # Application definition
 
@@ -119,16 +119,7 @@ STATIC_URL = "/static/"
 
 STATICFILES_DIRS = []
 
-ALLOWED_HOSTS = ['parseport-dj']
+ALLOWED_HOSTS = ['pp-dj']
 
-# Temporarily!
-CORS_ORIGIN_WHITELIST = [
-    "http://localhost:4200",  # From local dev server
-    "http://localhost:8080",  # From the container
-]
-
-SPINDLE_HOST = os.getenv("SPINDLE_HOST", "parseport-spindle:8000")
-LATEX_HOST = os.getenv("LATEX_HOST", "parseport-latex:8000")
-
-SPINDLE_URL = f"http://{SPINDLE_HOST}/"
-LATEX_SERVICE_URL = f"http://{LATEX_HOST}/"
+SPINDLE_URL = f"http://pp-spindle:32768/"
+LATEX_SERVICE_URL = f"http://pp-latex:32769/"

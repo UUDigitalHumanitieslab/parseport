@@ -18,5 +18,8 @@ WORKDIR /src
 
 COPY . /src/
 
+# Create a directory for Gunicorn logs (production).
+RUN mkdir -p /logs
+
 # Expose port
 EXPOSE 8000

@@ -12,6 +12,9 @@ RUN yarn install
 # Copy app source
 COPY . /app
 
+# Pre-build
+RUN npm run prebuild
+
 # Build app
 RUN npm run build -- --output-path=./dist/out --configuration production
 

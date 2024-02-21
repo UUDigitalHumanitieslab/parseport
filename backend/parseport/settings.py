@@ -21,7 +21,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-1234567890')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DJANGO_DEBUG', True) == 1
+DEBUG = int(os.getenv('DJANGO_DEBUG', 0)) == 1
 
 # Application definition
 
@@ -35,7 +35,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "revproxy",
-    "example",
     "corsheaders",
 ]
 

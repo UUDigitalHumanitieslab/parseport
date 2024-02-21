@@ -6,4 +6,5 @@ psycopg2 --no-binary psycopg2
 pytest
 pytest-django
 pytest-xdist
--e git+https://github.com/konstantinosKokos/aethel@stable#egg=aethel
+django-cors-headers==4.3.1
+aethel @ git+https://github.com/konstantinosKokos/aethel@stable#egg=aethel

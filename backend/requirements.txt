@@ -6,18 +6,25 @@
 #
 --no-binary psycopg2
 
--e git+https://github.com/konstantinosKokos/aethel@stable#egg=aethel
+aethel @ git+https://github.com/konstantinosKokos/aethel@stable
     # via -r requirements.in
 asgiref==3.7.2
-    # via django
+    # via
+    #   django
+    #   django-cors-headers
 beautifulsoup4==4.12.2
     # via django-livereload-server
+colorama==0.4.6
+    # via pytest
 django==4.2.3
     # via
     #   -r requirements.in
+    #   django-cors-headers
     #   django-livereload-server
     #   django-revproxy
     #   djangorestframework
+django-cors-headers==4.3.1
+    # via -r requirements.in
 django-livereload-server==0.4
     # via -r requirements.in
 django-revproxy==0.10.0
@@ -59,5 +66,7 @@ tornado==6.3.2
     # via django-livereload-server
 typing-extensions==4.7.1
     # via asgiref
+tzdata==2023.4
+    # via django
 urllib3==2.0.4
     # via django-revproxy

@@ -29,6 +29,7 @@ http = urllib3.PoolManager()
 Mode = Literal["latex", "pdf", "overleaf", "term-table", "proof"]
 
 
+
 class SpindleErrorSource(Enum):
     INPUT = "input"
     SPINDLE = "spindle"

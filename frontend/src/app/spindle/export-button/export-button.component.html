@@ -1,0 +1,21 @@
+<button
+    [class]="mode ? 'button ' + mode : 'button'"
+    [class.is-loading]="isLoading"
+    [class.with-text-below]="textBelow !== null"
+    (click)="export.emit(mode ?? 'term-table')"
+    type="button"
+>
+    <span *ngIf="mode" class="icon">
+        <img src="./assets/{{ mode }}-logo.svg" alt="{{ mode }}-logo" />
+    </span>
+    <span
+        class="button-text"
+        [class.with-icon]="mode !== null"
+        [class.invisible]="isLoading"
+    >
+        {{ buttonText }}
+    </span>
+    <span class="text-below" [class.invisible]="textBelow === null" i18n>
+        {{ textBelow }}
+    </span>
+</button>

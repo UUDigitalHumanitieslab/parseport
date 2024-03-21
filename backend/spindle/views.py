@@ -190,9 +190,19 @@ class SpindleView(View):
 
     def term_table_response(self, parsed: ParserResponse) -> JsonResponse:
         """Return the term and the lexical phrases as a JSON response."""
+
+        # the json serializatino of phrases uses a prefix notation for types.
+        # this is good for data-exchange purposes (easier parsing) but is less
+        # idea for human consumption. Therefore we override the type defnitions with
+        # an infix representation that is already available in aethel in Type.__repr__,
+        # but isn't otherwise exposed with a neat API
+        phrases = [dict(phrase.json(),
+                        type=repr(phrase.type))
+                   for phrase in parsed.lexical_phrases]
+
         return SpindleResponse(
             term=str(parsed.proof.term),
-            lexical_phrases=[phrase.json() for phrase in parsed.lexical_phrases],
+            lexical_phrases=phrases,
         ).json_response()
 
     def proof_response(self, parsed: ParserResponse) -> JsonResponse:

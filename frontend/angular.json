@@ -71,15 +71,15 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "parseport:build",
-            "proxyConfig": "src/proxy.conf.json"
+            "proxyConfig": "src/proxy.conf.json",
+            "buildTarget": "parseport:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "parseport:build:production"
+              "buildTarget": "parseport:build:production"
             },
             "development": {
-              "browserTarget": "parseport:build:development"
+              "buildTarget": "parseport:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -87,7 +87,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "parseport:build"
+            "buildTarget": "parseport:build"
           }
         },
         "test": {

@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 
 import { HomeComponent } from './home/home.component';
 import { SpindleComponent } from './spindle/spindle.component';
+import { AethelComponent } from './aethel/aethel.component';
 
 const routes: Routes = [
     {
@@ -13,8 +14,8 @@ const routes: Routes = [
         component: SpindleComponent,
     },
     {
-        path: 'alpino',
-        component: HomeComponent,
+        path: 'æthel',
+        component: AethelComponent,
     },
     {
         path: 'about',

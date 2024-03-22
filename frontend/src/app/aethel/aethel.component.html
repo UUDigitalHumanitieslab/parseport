@@ -1,0 +1,17 @@
+<p-table [value]="items">
+    <ng-template pTemplate="header" styleClass="p-datatable-striped">
+        <tr>
+            <th>Word/lemma</th>
+            <th>Type</th>
+            <th>Frequency</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-boom>
+        <tr>
+            <td>{{boom.word}}</td>
+            <td>{{boom.type}}</td>
+            <td>{{boom.frequency}}</td>
+        </tr>
+    </ng-template>
+</p-table>
+

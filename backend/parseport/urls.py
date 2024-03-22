@@ -31,6 +31,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include(api_router.urls)),
     path("api/spindle/<str:mode>", SpindleView.as_view(), name="spindle"),
+    path("api/aethel/", include("aethel_db.urls")),
     path(
         "api-auth/",
         include(

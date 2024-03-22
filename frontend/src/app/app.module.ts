@@ -16,6 +16,8 @@ import { AlertContainerDirective } from './shared/directives/alert-container.dir
 import { AlertService } from './shared/services/alert.service';
 import { ExportButtonComponent } from './spindle/export-button/export-button.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import  { TableModule } from 'primeng/table';
+import { AethelComponent } from "./aethel/aethel.component";
 
 @NgModule({
     declarations: [
@@ -27,6 +29,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
         MenuComponent,
         SpindleComponent,
         ExportButtonComponent,
+        AethelComponent
     ],
     imports: [
         AppRoutingModule,
@@ -35,6 +38,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
         HttpClientModule,
         ReactiveFormsModule,
         FontAwesomeModule,
+        TableModule
     ],
     providers: [AlertService],
     bootstrap: [AppComponent],

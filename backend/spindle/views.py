@@ -193,7 +193,7 @@ class SpindleView(View):
 
         # the json serialization of phrases uses a prefix notation for types.
         # this is good for data-exchange purposes (easier parsing) but is less
-        # idea for human consumption. Therefore we override the type defnitions with
+        # ideal for human consumption. Therefore we override the type definitions with
         # an infix representation that is already available in aethel in Type.__repr__,
         # but isn't otherwise exposed with a neat API
         phrases = [dict(phrase.json(),

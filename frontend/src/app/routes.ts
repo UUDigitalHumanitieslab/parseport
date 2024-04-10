@@ -13,15 +13,20 @@ const routes: Routes = [
     },
     {
         path: 'spindle',
-        component: SpindleComponent,
-    },
-    {
-        path: 'spindle/about',
-        component: SpindleAboutComponent,
-    },
-    {
-        path: 'spindle/notation',
-        component: SpindleNotationComponent,
+        children: [
+            {
+                path: 'about',
+                component: SpindleAboutComponent
+            },
+            {
+                path: 'notation',
+                component: SpindleNotationComponent
+            },
+            {
+                path: '',
+                component: SpindleComponent
+            }
+        ]
     },
     {
         path: 'alpino',

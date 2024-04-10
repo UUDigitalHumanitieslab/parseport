@@ -8,6 +8,7 @@ import {
 import { ReactiveFormsModule } from "@angular/forms";
 import { ExportButtonComponent } from "./export-button/export-button.component";
 import { ApiService, SpindleReturn } from "../shared/services/api.service";
+import { RouterModule } from "@angular/router";
 
 describe("SpindleComponent", () => {
     let component: SpindleComponent;
@@ -17,7 +18,7 @@ describe("SpindleComponent", () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule, ReactiveFormsModule],
+            imports: [HttpClientTestingModule, ReactiveFormsModule, RouterModule.forRoot([])],
             declarations: [SpindleComponent, ExportButtonComponent],
         }).compileComponents();
 

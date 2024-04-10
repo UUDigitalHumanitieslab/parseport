@@ -16,6 +16,8 @@ import { AlertContainerDirective } from './shared/directives/alert-container.dir
 import { AlertService } from './shared/services/alert.service';
 import { ExportButtonComponent } from './spindle/export-button/export-button.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { SpindleAboutComponent } from './spindle/spindle-about/spindle-about.component';
+import { SpindleNotationComponent } from './spindle/spindle-notation/spindle-notation.component';
 
 @NgModule({
     declarations: [
@@ -27,6 +29,8 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
         MenuComponent,
         SpindleComponent,
         ExportButtonComponent,
+        SpindleAboutComponent,
+        SpindleNotationComponent,
     ],
     imports: [
         AppRoutingModule,

@@ -18,6 +18,7 @@ import { ExportButtonComponent } from './spindle/export-button/export-button.com
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SpindleAboutComponent } from './spindle/spindle-about/spindle-about.component';
 import { SpindleNotationComponent } from './spindle/spindle-notation/spindle-notation.component';
+import { ReferencesComponent } from './references/references.component';
 
 @NgModule({
     declarations: [
@@ -31,6 +32,7 @@ import { SpindleNotationComponent } from './spindle/spindle-notation/spindle-not
         ExportButtonComponent,
         SpindleAboutComponent,
         SpindleNotationComponent,
+        ReferencesComponent,
     ],
     imports: [
         AppRoutingModule,

@@ -20,6 +20,9 @@ coverage.xml
 local_settings.py
 db.sqlite3
 
+# Dev datasets
+.aethel_db/data
+
 # pyenv
 .python-version
 

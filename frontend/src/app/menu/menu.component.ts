@@ -8,7 +8,7 @@ import { animations, ShowState } from '../animations';
     styleUrls: ['./menu.component.scss']
 })
 export class MenuComponent {
-    burgerShow: ShowState = 'hide';
+    burgerShow: ShowState = 'show';
     burgerActive = false;
 
     constructor(private ngZone: NgZone) { }

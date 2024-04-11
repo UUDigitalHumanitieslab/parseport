@@ -2,6 +2,9 @@ import { Routes } from '@angular/router';
 
 import { HomeComponent } from './home/home.component';
 import { SpindleComponent } from './spindle/spindle.component';
+import { SpindleAboutComponent } from './spindle/spindle-about/spindle-about.component';
+import { SpindleNotationComponent } from './spindle/spindle-notation/spindle-notation.component';
+import { ReferencesComponent } from './references/references.component';
 
 const routes: Routes = [
     {
@@ -10,7 +13,20 @@ const routes: Routes = [
     },
     {
         path: 'spindle',
-        component: SpindleComponent,
+        children: [
+            {
+                path: 'about',
+                component: SpindleAboutComponent
+            },
+            {
+                path: 'notation',
+                component: SpindleNotationComponent
+            },
+            {
+                path: '',
+                component: SpindleComponent
+            }
+        ]
     },
     {
         path: 'alpino',
@@ -21,8 +37,8 @@ const routes: Routes = [
         component: HomeComponent,
     },
     {
-        path: 'links',
-        component: HomeComponent,
+        path: 'refs',
+        component: ReferencesComponent,
     },
     {
         path: '',

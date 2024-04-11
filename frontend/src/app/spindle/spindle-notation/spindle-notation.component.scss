@@ -1,0 +1,19 @@
+dt {
+    font-weight: bold;
+}
+
+.mono {
+    font-family: monospace;
+}
+
+var {
+    font-family: serif;
+}
+
+td {
+    border: 0 !important;
+}
+
+td:nth-child(2) {
+    width: 90%;
+}

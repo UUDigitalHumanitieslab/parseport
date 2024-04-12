@@ -7,12 +7,21 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from aethel import ProofBank
 from aethel.frontend import LexicalPhrase, Sample
+from parseport.logger import logger
 
+FULL_DATASET_PATH = getattr(settings, "FULL_DATASET_PATH")
+DATA_SUBSET_PATH = getattr(settings, "DATA_SUBSET_PATH")
 
 if getattr(settings, "DEBUG", False) is False:
-    dataset = ProofBank.load_data("./aethel_db/data/aethel_subset.pickle")
+    dataset = ProofBank.load_data(FULL_DATASET_PATH)
 else:
-    dataset = ProofBank.load_data("./src/aethel/data/aethel_1.0.0a5.pickle")
+    try:
+        dataset = ProofBank.load_data(DATA_SUBSET_PATH)
+    except FileNotFoundError:
+        logger.error(
+            "Aethel subset not found. Have you run create_aethel_subset? Using full dataset instead."
+        )
+        dataset = ProofBank.load_data(FULL_DATASET_PATH)
 
 
 @dataclass
@@ -38,7 +47,7 @@ class AethelListResponse:
             lemma=item.lemma,
             phrase=phrase.string,
             type=str(phrase.type),
-            sentence=sample.sentence
+            sentence=sample.sentence,
         )
         self.results.append(list_item)
 
@@ -66,7 +75,6 @@ class AethelQueryView(APIView):
             for phrase in lexical_phrases:
                 if word_query.lower() in phrase.string.lower():
                     response_object.add_phrase(phrase, sample)
-
 
         return response_object.json_response()
 

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { SpindleMode } from "src/app/shared/services/api.service";
+import { SpindleMode } from "src/app/shared/services/types";
 
 @Component({
     selector: "pp-export-button",

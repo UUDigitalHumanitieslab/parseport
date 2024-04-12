@@ -1,52 +1,16 @@
-import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { ErrorHandlerService } from "./error-handler.service";
 import { Observable, Subject, catchError, of, switchMap } from "rxjs";
 import { environment } from "src/environments/environment";
-
-// This should be the same as the one in the backend.
-export const enum SpindleErrorSource {
-    INPUT = "input",
-    SPINDLE = "spindle",
-    LATEX = "latex",
-    GENERAL = "general",
-}
-
-type LexicalItem = {
-    word: string;
-    pos: string;
-    pt: string;
-    lemma: string;
-};
-
-export type LexicalPhrase = {
-    items: LexicalItem[];
-    type: string;
-};
-
-// Should correspond with SpindleResponse dataclass in backend.
-export interface SpindleReturn {
-    error: SpindleErrorSource | null;
-    latex: string | null;
-    pdf: string | null;
-    redirect: string | null;
-    term: string | null;
-    lexical_phrases: LexicalPhrase[];
-    proof: Record<string, unknown> | null;
-}
-
-export type SpindleMode = "latex" | "pdf" | "overleaf" | "term-table" | "proof";
-
-export interface SpindleInput {
-    sentence: string;
-    mode: SpindleMode;
-}
+import { AethelReturn, SpindleInput, SpindleReturn } from "./types";
 
 @Injectable({
     providedIn: "root",
 })
 export class ApiService {
     spindleInput$ = new Subject<SpindleInput>();
+    aethelInput$ = new Subject<string>();
 
     constructor(
         private http: HttpClient,
@@ -58,7 +22,7 @@ export class ApiService {
             switchMap((input) =>
                 this.http
                     .post<SpindleReturn | null>(
-                        `${environment.apiUrl}${input.mode}`,
+                        `${environment.apiUrl}spindle/${input.mode}`,
                         { input: input.sentence },
                         {
                             headers: new HttpHeaders({
@@ -78,6 +42,34 @@ export class ApiService {
                         }),
                     ),
             ),
+        );
+    }
+
+    public aethelResult$(): Observable<AethelReturn | null> {
+        return this.aethelInput$.pipe(
+            switchMap((input) => {
+                console.log('Input:', input)
+
+                const headers = new HttpHeaders({
+                    "Content-Type": "application/json",
+                });
+
+                const params = new HttpParams().set("query", input);
+
+                return this.http
+                    .get<AethelReturn | null>(`${environment.apiUrl}aethel`, {
+                        headers, params
+                    })
+                    .pipe(
+                        catchError((error) => {
+                            this.errorHandler.handleHttpError(
+                                error,
+                                $localize`An error occurred while handling your input.`,
+                            );
+                            return of(null);
+                        }),
+                    );
+            }),
         );
     }
 }

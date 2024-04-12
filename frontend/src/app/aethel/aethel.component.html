@@ -1,17 +1,44 @@
-<p-table [value]="items">
-    <ng-template pTemplate="header" styleClass="p-datatable-striped">
-        <tr>
-            <th>Word/lemma</th>
-            <th>Type</th>
-            <th>Frequency</th>
-        </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-boom>
-        <tr>
-            <td>{{boom.word}}</td>
-            <td>{{boom.type}}</td>
-            <td>{{boom.frequency}}</td>
-        </tr>
-    </ng-template>
-</p-table>
+
+<h2 class="title is-2" i18n>Æthel</h2>
+
+<p class="field" i18n>
+    Welcome to Æthel. Search for a word or lemma in the input field below to start.
+</p>
+
+
+<form class="form">
+    <div class="field">
+        <label for="aethel-input" class="label">Search:</label>
+        <input
+            id="aethel-input"
+            class="input"
+            type="text"
+            [formControl]="aethelInput"
+            (keydown.enter)="$event.preventDefault(); search()"
+            placeholder="Enter a word or lemma..."
+            placeholder-i18n
+        />
+    </div>
+</form>
+
+<div class="table-container">
+    <p-table [value]="rows">
+        <ng-template pTemplate="header" styleClass="p-datatable-striped">
+            <tr>
+                <th>Sentence</th>
+                <th>Lemma</th>
+                <th>Phrase</th>
+                <th>Type</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-row>
+            <tr>
+                <td>{{row.sentence}}</td>
+                <td>{{row.lemma}}</td>
+                <td>{{row.phrase}}</td>
+                <td>{{row.type}}</td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
 

@@ -23,7 +23,6 @@
             <a class="navbar-item" [routerLink]="['/links']" routerLinkActive="is-active" i18n>
                 Links
             </a>
-
             <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
                 data-target="navbarBasicExample" (click)="toggleBurger()"
                 [ngClass]="{'is-active': burgerShow === 'show'}">
@@ -43,6 +42,10 @@
                     Spindle
                 </a>
 
+                <a class="navbar-item" [routerLink]="['/æthel']" routerLinkActive="is-active" i18n>
+                    Æthel
+                </a>
+
                 <a class="navbar-item" [routerLink]="['/alpino']" routerLinkActive="is-active" i18n>
                     Alpino
                 </a>
@@ -51,8 +54,8 @@
                     About
                 </a>
 
-                <a class="navbar-item" [routerLink]="['/links']" routerLinkActive="is-active" i18n>
-                    Links
+                <a class="navbar-item" [routerLink]="['/refs']" routerLinkActive="is-active" i18n>
+                    References
                 </a>
             </div>
         </div>

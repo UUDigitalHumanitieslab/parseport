@@ -1,8 +1,13 @@
 import { Component, DestroyRef, OnInit } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { FormControl } from "@angular/forms";
-import { ApiService } from "../shared/services/api.service";
 import { AethelReturnItem } from "../shared/services/types";
+import { AethelApiService } from "../shared/services/aethel-api.service";
+import { map } from "rxjs";
+import {
+    faChevronDown,
+    faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
 
 @Component({
     selector: "pp-aethel",
@@ -12,21 +17,21 @@ import { AethelReturnItem } from "../shared/services/types";
 export class AethelComponent implements OnInit {
     aethelInput = new FormControl<string>("");
     rows: AethelReturnItem[] = [];
-    loading = false;
-    submitted = false;
+    loading$ = this.apiService.loading$;
+    submitted = this.apiService.output$.pipe(map(() => true));
+
+    faChevronRight = faChevronRight;
+    faChevronDown = faChevronDown;
 
     constructor(
-        private apiService: ApiService,
+        private apiService: AethelApiService,
         private destroyRef: DestroyRef,
     ) {}
 
     ngOnInit(): void {
-        this.apiService
-            .aethelResult$()
+        this.apiService.output$
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe((response) => {
-                this.submitted = true;
-                this.loading = false;
                 // HTTP error
                 if (!response) {
                     return;
@@ -38,15 +43,14 @@ export class AethelComponent implements OnInit {
             });
     }
 
-    private addUniqueKeys(items: AethelReturnItem[]): AethelReturnItem[] {
-        return items.map((item, index) => ({ ...item, key: index }));
-    }
-
-    search(): void {
+    public search(): void {
         if (!this.aethelInput.value) {
             return;
         }
-        this.loading = true;
-        this.apiService.aethelInput$.next(this.aethelInput.value);
+        this.apiService.input$.next(this.aethelInput.value);
+    }
+
+    private addUniqueKeys(items: AethelReturnItem[]): AethelReturnItem[] {
+        return items.map((item, index) => ({ ...item, key: index }));
     }
 }

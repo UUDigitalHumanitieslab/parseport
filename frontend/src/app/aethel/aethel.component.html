@@ -21,7 +21,7 @@
             <button
                 type="button"
                 class="button is-primary"
-                [class.is-loading]="loading"
+                [class.is-loading]="loading$ | async"
                 (click)="search()"
             >
                 <span i18n>Search</span>
@@ -30,7 +30,7 @@
     </div>
 </form>
 
-@if (submitted) {
+@if (submitted | async) {
 <div class="table-container">
     <p-table
         [value]="rows"
@@ -46,34 +46,40 @@
             <tr>
                 <th></th>
                 <th pSortableColumn="word">
-                    <span>Word</span>
+                    <span i18n>Word</span>
                     <p-sortIcon field="word"></p-sortIcon>
                 </th>
                 <th pSortableColumn="lemma">
-                    <span>Lemma</span>
+                    <span i18n>Lemma</span>
                     <p-sortIcon field="lemma"></p-sortIcon>
                 </th>
                 <th pSortableColumn="type">
-                    <span>Type</span>
+                    <span i18n>Type</span>
                     <p-sortIcon field="type"></p-sortIcon>
                 </th>
                 <th pSortableColumn="samples">
-                    <span>Samples</span>
+                    <span i18n>Samples</span>
                     <p-sortIcon field="samples"></p-sortIcon>
                 </th>
             </tr>
         </ng-template>
-        <ng-template pTemplate="body" let-row let-expanded>
+        <ng-template pTemplate="body" let-row let-expanded="expanded">
             <tr>
                 <td>
                     <button
+                        class="button is-small expand-button"
                         type="button"
                         pButton
                         pRipple
                         [pRowToggler]="row"
-                        class="p-button-text p-button-rounded p-button-plain"
                     >
-                        Expand
+                        <fa-icon
+                            [icon]="
+                                expanded === true
+                                    ? faChevronDown
+                                    : faChevronRight
+                            "
+                        ></fa-icon>
                     </button>
                 </td>
                 <td>{{ row.word }}</td>

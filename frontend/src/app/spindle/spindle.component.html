@@ -32,7 +32,7 @@
     <pp-export-button
         i18n-buttonText
         buttonText="Parse"
-        [isLoading]="loading === 'term-table'"
+        [isLoading]="(loading$ | async) === 'term-table'"
         (click)="parse()"
     ></pp-export-button>
 </div>
@@ -60,21 +60,21 @@
     <div class="button-container buttons">
         <pp-export-button
             buttonText="Export to LaTeX"
-            [isLoading]="loading === 'latex'"
+            [isLoading]="(loading$ | async) === 'latex'"
             (export)="export($event)"
             mode="latex"
             i18n-buttonText
         />
         <pp-export-button
             buttonText="Export to PDF"
-            [isLoading]="loading === 'pdf'"
+            [isLoading]="(loading$ | async) === 'pdf'"
             (export)="export($event)"
             mode="pdf"
             i18n-buttonText
         />
         <pp-export-button
             buttonText="Open in Overleaf"
-            [isLoading]="loading === 'overleaf'"
+            [isLoading]="(loading$ | async) === 'overleaf'"
             (export)="export($event)"
             textBelow="Requires an Overleaf account."
             mode="overleaf"
@@ -83,7 +83,7 @@
         />
         <pp-export-button
             buttonText="Export proof"
-            [isLoading]="loading === 'proof'"
+            [isLoading]="(loading$ | async) === 'proof'"
             (export)="export($event)"
             mode="proof"
             i18n-buttonText
@@ -93,7 +93,7 @@
     <div class="output-container" *ngIf="textOutput">
         <div class="output-button-container">
             <button
-                class="button is-small download-file" 
+                class="button is-small download-file"
                 type="button"
                 (click)="downloadAsFile(textOutput.text, textOutput.extension)"
             >

@@ -25,6 +25,8 @@ export class AethelComponent implements OnInit {
             .aethelResult$()
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe((response) => {
+                this.submitted = true;
+                this.loading = false;
                 // HTTP error
                 if (!response) {
                     return;
@@ -32,8 +34,12 @@ export class AethelComponent implements OnInit {
                 if (response.error) {
                     // TODO: handle error!
                 }
-                this.rows = response.results;
+                this.rows = this.addUniqueKeys(response.results);
             });
+    }
+
+    private addUniqueKeys(items: AethelReturnItem[]): AethelReturnItem[] {
+        return items.map((item, index) => ({ ...item, key: index }));
     }
 
     search(): void {

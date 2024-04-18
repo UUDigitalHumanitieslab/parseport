@@ -36,11 +36,16 @@ export interface SpindleReturn {
     proof: Record<string, unknown> | null;
 }
 
-export interface AethelReturnItem {
+export interface AethelSample {
+    name: string;
     sentence: string;
+}
+
+export interface AethelReturnItem {
     lemma: string;
-    phrase: string;
+    word: string;
     type: string;
+    samples: AethelSample[];
 }
 
 export interface AethelReturn {

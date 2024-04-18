@@ -18,6 +18,7 @@ import { ExportButtonComponent } from './spindle/export-button/export-button.com
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import  { TableModule } from 'primeng/table';
 import { AethelComponent } from "./aethel/aethel.component";
+import { HighlightPipe } from "./shared/pipes/highlight.pipe";
 
 @NgModule({
     declarations: [
@@ -29,7 +30,8 @@ import { AethelComponent } from "./aethel/aethel.component";
         MenuComponent,
         SpindleComponent,
         ExportButtonComponent,
-        AethelComponent
+        AethelComponent,
+        HighlightPipe,
     ],
     imports: [
         AppRoutingModule,

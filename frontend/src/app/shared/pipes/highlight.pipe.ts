@@ -5,12 +5,11 @@ import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
     name: "highlight",
 })
 export class HighlightPipe implements PipeTransform {
-
-    constructor(private sanitizer: DomSanitizer) { }
+    constructor(private sanitizer: DomSanitizer) {}
 
     transform(value: string, word: string): SafeHtml {
-        const regex = new RegExp(`\\b${word}\\b`, 'gi');
-        const highlighted = value.replace(regex, '<strong>$&</strong>');
+        const regex = new RegExp(`\\b${word}\\b`, "gi");
+        const highlighted = value.replace(regex, "<strong>$&</strong>");
         return this.sanitizer.bypassSecurityTrustHtml(highlighted);
     }
 }

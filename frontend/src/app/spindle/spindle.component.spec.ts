@@ -7,13 +7,14 @@ import {
 } from "@angular/common/http/testing";
 import { ReactiveFormsModule } from "@angular/forms";
 import { ExportButtonComponent } from "./export-button/export-button.component";
-import { ApiService, SpindleReturn } from "../shared/services/api.service";
 import { RouterModule } from "@angular/router";
+import { SpindleApiService } from "../shared/services/spindle-api.service";
+import { SpindleReturn } from "../shared/services/types";
 
 describe("SpindleComponent", () => {
     let component: SpindleComponent;
     let fixture: ComponentFixture<SpindleComponent>;
-    let apiService: ApiService;
+    let apiService: SpindleApiService;
     let httpTestingController: HttpTestingController;
 
     beforeEach(async () => {
@@ -24,7 +25,7 @@ describe("SpindleComponent", () => {
 
         fixture = TestBed.createComponent(SpindleComponent);
         component = fixture.componentInstance;
-        apiService = TestBed.inject(ApiService);
+        apiService = TestBed.inject(SpindleApiService);
         httpTestingController = TestBed.inject(HttpTestingController);
         fixture.detectChanges();
     });
@@ -40,7 +41,7 @@ describe("SpindleComponent", () => {
 
     it("should pass text + mode to the API service when parse is clicked", () => {
         component.spindleInput.setValue("test sentence");
-        apiService.spindleInput$.subscribe((input) => {
+        apiService.input$.subscribe((input) => {
             expect(input.mode).toEqual("term-table");
             expect(input.sentence).toEqual("test sentence");
         });
@@ -53,7 +54,7 @@ describe("SpindleComponent", () => {
 
     it("should pass text + mode to the API service when export is clicked", () => {
         component.spindleInput.setValue("test sentence 2");
-        apiService.spindleInput$.subscribe((input) => {
+        apiService.input$.subscribe((input) => {
             expect(input.mode).toEqual("pdf");
             expect(input.sentence).toEqual("test sentence 2");
         });

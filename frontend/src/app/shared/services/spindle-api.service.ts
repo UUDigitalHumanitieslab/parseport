@@ -10,6 +10,7 @@ import {
     Observable,
     map,
     merge,
+    share,
 } from "rxjs";
 import { environment } from "src/environments/environment";
 import { ErrorHandlerService } from "./error-handler.service";
@@ -54,6 +55,7 @@ export class SpindleApiService
                     }),
                 ),
         ),
+        share()
     );
 
     loading$: Observable<SpindleMode | null> = merge(

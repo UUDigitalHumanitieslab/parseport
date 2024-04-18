@@ -8,6 +8,7 @@ import {
     map,
     merge,
     of,
+    share,
     switchMap,
     throttleTime,
 } from "rxjs";
@@ -38,7 +39,7 @@ export class AethelApiService
             const params = new HttpParams().set("query", input);
 
             return this.http
-                .get<AethelReturn | null>(`${environment.apiUrl}aethel`, {
+                .get<AethelReturn | null>(`${environment.apiUrl}aethel/`, {
                     headers,
                     params,
                 })
@@ -50,8 +51,9 @@ export class AethelApiService
                         );
                         return of(null);
                     }),
-                );
+            );
         }),
+        share(),
     );
 
     loading$: Observable<boolean> = merge(

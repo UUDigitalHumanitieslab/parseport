@@ -6,8 +6,10 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from aethel import ProofBank
-from aethel.frontend import LexicalPhrase, Sample
+from aethel.frontend import Sample, LexicalItem
+from aethel_db.filters import in_lemma, in_word
 from parseport.logger import logger
+from src.aethel.scripts.search import search
 
 FULL_DATASET_PATH = getattr(settings, "FULL_DATASET_PATH")
 DATA_SUBSET_PATH = getattr(settings, "DATA_SUBSET_PATH")
@@ -25,31 +27,49 @@ else:
 
 
 @dataclass
-class AethelListItem:
+class AethelSample:
+    name: str
     sentence: str
+
+
+@dataclass
+class AethelListItem:
     lemma: str
-    phrase: str
+    word: str
     type: str
+    samples: List[AethelSample] = field(default_factory=list)
 
 
 @dataclass
 class AethelListResponse:
+    """
+    Response object for Aethel query view.
+    """
+
     results: List[AethelListItem] = field(default_factory=list)
     error: Optional[str] = None
 
-    def add_phrase(self, phrase: LexicalPhrase, sample: Sample) -> None:
-        if len(phrase.items) > 1:
-            print("Phrase has more items than one!:", phrase.items)
-            return
+    def existing_result(
+        self, lemma: str, word: str, type: str
+    ) -> Optional[AethelListItem]:
+        """
+        Return an existing result with the same lemma, word, and type, if it exists.
+        """
+        for item in self.results:
+            if item.lemma == lemma and item.type == type and item.word == word:
+                return item
+        return None
 
-        item = phrase.items[0]
-        list_item = AethelListItem(
-            lemma=item.lemma,
-            phrase=phrase.string,
-            type=str(phrase.type),
-            sentence=sample.sentence,
+    def add_result(self, lemma: str, word: str, type: str, sample: Sample) -> None:
+        result_item = self.existing_result(lemma, word, type)
+
+        if result_item is None:
+            result_item = AethelListItem(lemma=lemma, word=word, type=type)
+            self.results.append(result_item)
+
+        result_item.samples.append(
+            AethelSample(name=sample.name, sentence=sample.sentence)
         )
-        self.results.append(list_item)
 
     def json_response(self) -> JsonResponse:
         results = [asdict(result) for result in self.results]
@@ -65,18 +85,33 @@ class AethelListResponse:
 
 class AethelQueryView(APIView):
     def get(self, request: HttpRequest):
-        word_query = self.request.query_params.get("query", None)
-        if word_query is None:
+        query_input = self.request.query_params.get("query", None)
+        if query_input is None:
             return AethelListResponse().json_response()
 
-        response_object = AethelListResponse()
-        for sample in dataset.samples:
+        # Filter samples based on query
+        query_result = search(
+            bank=dataset.samples,
+            query=in_word(query_input.lower()) | in_lemma(query_input.lower()),
+        )
+
+        def item_contains_query_string(item: LexicalItem) -> bool:
+            return (
+                query_input.lower() in item.lemma.lower()
+                or query_input.lower() in item.word.lower()
+            )
+
+        collected_results = AethelListResponse()
+        for sample in query_result:
             lexical_phrases = sample.lexical_phrases
             for phrase in lexical_phrases:
-                if word_query.lower() in phrase.string.lower():
-                    response_object.add_phrase(phrase, sample)
+                for item in phrase.items:
+                    if item_contains_query_string(item):
+                        collected_results.add_result(
+                            item.lemma, item.word, str(phrase.type), sample
+                        )
 
-        return response_object.json_response()
+        return collected_results.json_response()
 
 
 class AethelDetailView(APIView):

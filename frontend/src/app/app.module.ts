@@ -22,6 +22,7 @@ import { HighlightPipe } from "./shared/pipes/highlight.pipe";
 import { SpindleAboutComponent } from './spindle/spindle-about/spindle-about.component';
 import { SpindleNotationComponent } from './spindle/spindle-notation/spindle-notation.component';
 import { ReferencesComponent } from './references/references.component';
+import { ProofPipe } from "./shared/pipes/proof.pipe";
 
 @NgModule({
     declarations: [
@@ -38,6 +39,7 @@ import { ReferencesComponent } from './references/references.component';
         ReferencesComponent,
         AethelComponent,
         HighlightPipe,
+        ProofPipe,
     ],
     imports: [
         AppRoutingModule,

@@ -84,7 +84,7 @@
                 </td>
                 <td>{{ row.word }}</td>
                 <td>{{ row.lemma }}</td>
-                <td>{{ row.type }}</td>
+                <td [innerHTML]="row.type | proof"></td>
                 <td>{{ row.samples.length }}</td>
             </tr>
         </ng-template>

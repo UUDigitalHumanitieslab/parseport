@@ -8,7 +8,7 @@ FULL_DATASET_PATH = getattr(settings, "FULL_DATASET_PATH")
 DATA_SUBSET_PATH = getattr(settings, "DATA_SUBSET_PATH")
 
 class Command(BaseCommand):
-    help = "Creates a subset of the Aethel dataset and outputs it to a new pickle file. Retrieves the passed number of records (default = 200) from each of the three subsets included: 'train', 'dev', and 'test'."
+    help = "Creates a subset of the Aethel dataset and outputs it to a new pickle file. Retrieves the passed number of records (default = 50) from each of the three subsets included: 'train', 'dev', and 'test'."
 
     def add_arguments(self, parser: CommandParser) -> None:
         parser.add_argument(
@@ -16,7 +16,7 @@ class Command(BaseCommand):
             "-n",
             dest="number-of-records",
             type=int,
-            default=200,
+            default=50,
             help="The number of records to include in the subset",
         )
         super().add_arguments(parser)

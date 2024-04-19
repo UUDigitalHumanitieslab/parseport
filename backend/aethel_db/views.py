@@ -101,17 +101,17 @@ class AethelQueryView(APIView):
                 or query_input.lower() in item.word.lower()
             )
 
-        collected_results = AethelListResponse()
+        response_object = AethelListResponse()
         for sample in query_result:
             lexical_phrases = sample.lexical_phrases
             for phrase in lexical_phrases:
                 for item in phrase.items:
                     if item_contains_query_string(item):
-                        collected_results.add_result(
+                        response_object.add_result(
                             item.lemma, item.word, str(phrase.type), sample
                         )
 
-        return collected_results.json_response()
+        return response_object.json_response()
 
 
 class AethelDetailView(APIView):

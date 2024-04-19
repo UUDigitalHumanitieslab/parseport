@@ -40,4 +40,12 @@ describe("ProofPipe", () => {
 
         expect(output).toEqual(expected);
     });
+
+    it("should transform single uppercase letters", () => {
+        const input = "N";
+        const output = pipe.transform(input);
+        const expected = '<span class="proof"><span class="term">N</span></span>';
+
+        expect(output).toEqual(expected);
+    });
 });

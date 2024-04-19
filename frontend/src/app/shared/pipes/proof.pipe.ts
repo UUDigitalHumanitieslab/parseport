@@ -43,8 +43,11 @@ export class ProofPipe implements PipeTransform {
         // Wrap all variables (i.e. instances of 'c' followed by one or multiple numbers) in a <var> tag.
         value = value.replace(/(c\d+)/g, '<var class="variable">$1</var>');
 
+        // Put the variable numbers in subscript.
+        value = value.replace(/c(\d+)/g, "c<sub>$1</sub>");
+
         // Wrap all terms (i.e. words starting with capital letters) with a <span class="term"> tag.
-        value = value.replace(/([A-Z][a-zA-z]+)/g, '<span class="term">$1</span>');
+        value = value.replace(/([A-Z][a-zA-z]*)/g, '<span class="term">$1</span>');
 
         return this.sanitizer.bypassSecurityTrustHtml(`<span class="proof">${value}</span>`);
     }

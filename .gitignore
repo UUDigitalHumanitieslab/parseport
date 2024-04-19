@@ -34,6 +34,7 @@ venv.bak/
 # Node
 node_modules/
 frontend/src/environments/version.ts
+frontend/.angular/
 frontend/.angular
 frontend/dist
 

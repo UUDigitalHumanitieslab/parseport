@@ -12,6 +12,7 @@
             <input
                 id="aethel-input"
                 class="input"
+                [class.is-danger]="aethelInput.touched && aethelInput.invalid"
                 type="text"
                 [formControl]="aethelInput"
                 (keydown.enter)="$event.preventDefault(); search()"
@@ -27,6 +28,9 @@
                 <span i18n>Search</span>
             </button>
         </div>
+        @if (aethelInput.touched && aethelInput.invalid) {
+        <p class="is-size-7 has-text-danger" i18n>Please enter at least three characters.</p>
+        }
     </div>
 </form>
 
@@ -44,20 +48,20 @@
     >
         <ng-template pTemplate="header" styleClass="p-datatable-striped">
             <tr>
-                <th></th>
-                <th pSortableColumn="word">
+                <th style="width: 10%"></th>
+                <th style="width: 20%" pSortableColumn="word">
                     <span i18n>Word</span>
                     <p-sortIcon field="word"></p-sortIcon>
                 </th>
-                <th pSortableColumn="lemma">
+                <th style="width: 20%" pSortableColumn="lemma">
                     <span i18n>Lemma</span>
                     <p-sortIcon field="lemma"></p-sortIcon>
                 </th>
-                <th pSortableColumn="type">
+                <th style="width: 20%" pSortableColumn="type">
                     <span i18n>Type</span>
                     <p-sortIcon field="type"></p-sortIcon>
                 </th>
-                <th pSortableColumn="samples">
+                <th style="width: 10%;"pSortableColumn="samples">
                     <span i18n>Samples</span>
                     <p-sortIcon field="samples"></p-sortIcon>
                 </th>
@@ -95,12 +99,12 @@
         </ng-template>
         <ng-template pTemplate="rowexpansion" let-row>
             @for (sample of row.samples; track $index) {
-            <tr>
+            <tr class="expanded-row">
                 <td
                     colspan="4"
                     [innerHTML]="sample.sentence | highlight: row.word"
                 ></td>
-                <td>
+                <td class="button-container" colspan="1">
                     <button
                         type="button"
                         class="button is-primary is-small"

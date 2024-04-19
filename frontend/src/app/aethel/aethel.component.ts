@@ -1,6 +1,6 @@
 import { Component, DestroyRef, OnInit } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { FormControl } from "@angular/forms";
+import { FormControl, Validators } from "@angular/forms";
 import { AethelReturnItem } from "../shared/services/types";
 import { AethelApiService } from "../shared/services/aethel-api.service";
 import { map } from "rxjs";
@@ -15,7 +15,9 @@ import {
     styleUrl: "./aethel.component.scss",
 })
 export class AethelComponent implements OnInit {
-    aethelInput = new FormControl<string>("");
+    aethelInput = new FormControl<string>("", {
+        validators: [Validators.minLength(3)],
+    });
     rows: AethelReturnItem[] = [];
     loading$ = this.apiService.loading$;
     submitted = this.apiService.output$.pipe(map(() => true));

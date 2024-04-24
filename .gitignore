@@ -40,3 +40,9 @@ frontend/dist
 
 # VS Code
 .vscode/
+
+# SQLite
+backend/sqlite.db
+
+# Aethel dataset
+aethel.pickle

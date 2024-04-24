@@ -19,6 +19,7 @@ In overview, your file structure should be as follows.
 ```
 ├── spindle-server
 |   └── Dockerfile
+|   └── model_weights.pt
 |
 ├── latex-service
 |   └── Dockerfile
@@ -29,8 +30,16 @@ In overview, your file structure should be as follows.
     ├── frontend
     |   └── Dockerfile
     └── backend
-        └── Dockerfile
+        ├── Dockerfile
+        └── aethel_db
+            └── data
+                └── aethel.pickle
 ```
+
+Note that you will need two data files in order to run this project.
+
+- `model_weights.pt` should be put in the root directory of the `spindle-server` project. It can be downloaded from _Yoda-link here_.
+- `aethel.pickle` should live at the `backend` directory of the `parseport` project. You can find it in the zip archive [here](https://github.com/konstantinosKokos/aethel/tree/stable/data).
 
 This application can be run in both `production` and `development` mode. Either mode will start a network of five containers.
 
@@ -58,6 +67,9 @@ The Spindle server needs to download several files before the parser is ready to
 
 Open your browser and visit your project at http://localhost:5000 to view the application.
 
+## Preparing for development
+
+Note that the Aethel dataset will be loaded in every time the backend server restarts. To avoid slow feedback loops in a development environment, consider running `python manage.py create_aethel_subset` before starting the development server. This will take create a much smaller subset that takes less than a second to load.
 
 
 ## Before you start

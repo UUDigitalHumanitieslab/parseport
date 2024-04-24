@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from aethel import ProofBank
-from aethel.frontend import Sample, LexicalItem
+from aethel.frontend import LexicalItem
 from parseport.logger import logger
 from aethel_db.search import search, in_lemma, in_word
 
@@ -52,7 +52,9 @@ class AethelListResponse:
                 return item
         return None
 
-    def add_result(self, lemma: str, word: str, type: str, sample: Sample) -> None:
+    def add_result(
+        self, lemma: str, word: str, type: str, sample_name: str, sample_sentence: str
+    ) -> None:
         result_item = self.existing_result(lemma, word, type)
 
         if result_item is None:
@@ -60,7 +62,7 @@ class AethelListResponse:
             self.results.append(result_item)
 
         result_item.samples.append(
-            AethelSample(name=sample.name, sentence=sample.sentence)
+            AethelSample(name=sample_name, sentence=sample_sentence)
         )
 
     def json_response(self) -> JsonResponse:
@@ -81,7 +83,7 @@ class AethelQueryView(APIView):
         if query_input is None or len(query_input) < 3:
             return AethelListResponse().json_response()
 
-        # Filter samples based on query
+        # First we select all relevant samples from the dataset that contain the query string.
         query_result = search(
             bank=dataset.samples,
             query=in_word(query_input.lower()) | in_lemma(query_input.lower()),
@@ -94,13 +96,18 @@ class AethelQueryView(APIView):
             )
 
         response_object = AethelListResponse()
+        # Then we loop over the samples and extract what we need from them (lemma, word, type etc.).
         for sample in query_result:
             lexical_phrases = sample.lexical_phrases
             for phrase in lexical_phrases:
                 for item in phrase.items:
                     if item_contains_query_string(item):
                         response_object.add_result(
-                            item.lemma, item.word, str(phrase.type), sample
+                            item.lemma,
+                            item.word,
+                            str(phrase.type),
+                            sample.name,
+                            sample.sentence,
                         )
 
         return response_object.json_response()

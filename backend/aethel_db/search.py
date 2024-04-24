@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Iterable, Callable, Iterator, List, Tuple
+from typing import Iterable, Callable, Iterator
 from aethel.frontend import Sample
 
 # The following methods and classes have been extracted from aethel.scripts.search (not part of the published library), with some minor customisations / simplifications.

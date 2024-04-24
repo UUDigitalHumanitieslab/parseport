@@ -11,19 +11,13 @@ from aethel_db.filters import in_lemma, in_word
 from parseport.logger import logger
 from src.aethel.scripts.search import search
 
-FULL_DATASET_PATH = getattr(settings, "FULL_DATASET_PATH")
-DATA_SUBSET_PATH = getattr(settings, "DATA_SUBSET_PATH")
+DATASET_PATH = getattr(settings, "DATASET_PATH")
+try:
+    dataset = ProofBank.load_data(DATASET_PATH)
+except FileNotFoundError:
+    logger.error(f"Æthel dataset not found.")
+    raise FileNotFoundError(f"Æthel dataset not found.")
 
-if getattr(settings, "DEBUG", False) is False:
-    dataset = ProofBank.load_data(FULL_DATASET_PATH)
-else:
-    try:
-        dataset = ProofBank.load_data(DATA_SUBSET_PATH)
-    except FileNotFoundError:
-        logger.error(
-            "Aethel subset not found. Have you run create_aethel_subset? Using full dataset instead."
-        )
-        dataset = ProofBank.load_data(FULL_DATASET_PATH)
 
 
 @dataclass

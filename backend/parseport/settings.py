@@ -124,5 +124,8 @@ if DEBUG:
 SPINDLE_URL = f"http://pp-spindle:32768/"
 LATEX_SERVICE_URL = f"http://pp-latex:32769/"
 
-FULL_DATASET_PATH = "./src/aethel/data/aethel_1.0.0a5.pickle"
-DATA_SUBSET_PATH = "./aethel_db/data/aethel_subset.pickle"
+DATASET_PATH = (
+    "./aethel_db/data/aethel_subset.pickle"
+    if DEBUG
+    else "./aethel_db/data/aethel_1.0.0a5.pickle"
+)

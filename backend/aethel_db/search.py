@@ -1,19 +1,12 @@
 from __future__ import annotations
-from typing import Iterable, Callable, Iterator
+from typing import Iterable, Callable, Iterator, List, Tuple
 from aethel.frontend import Sample
-from itertools import takewhile
 
-# The following methods and classes have been extracted from aethel.scripts.search (not part of the published library), with some minor customisations.
+# The following methods and classes have been extracted from aethel.scripts.search (not part of the published library), with some minor customisations / simplifications.
 
-def search(
-    bank: Iterable[Sample], query: Callable[[Sample], bool], num_hits: int | None = None
-) -> Iterator[Sample]:
-    f = filter(query, bank)
-    return (
-        f
-        if num_hits is None
-        else map(lambda x: x[1], takewhile(lambda x: x[0] < num_hits, enumerate(f)))
-    )
+
+def search(bank: Iterable[Sample], query: Callable[[Sample], bool]) -> Iterator[Sample]:
+    return filter(query, bank)
 
 
 def in_lemma(query_string: str) -> Query:

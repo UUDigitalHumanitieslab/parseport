@@ -1,6 +1,6 @@
 import { Component, DestroyRef, OnInit } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { FormControl, Validators } from "@angular/forms";
+import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { AethelReturnItem } from "../shared/services/types";
 import { AethelApiService } from "../shared/services/aethel-api.service";
 import { map } from "rxjs";
@@ -15,8 +15,10 @@ import {
     styleUrl: "./aethel.component.scss",
 })
 export class AethelComponent implements OnInit {
-    aethelInput = new FormControl<string>("", {
-        validators: [Validators.minLength(3)],
+    form = new FormGroup({
+        aethelInput: new FormControl<string>("", {
+            validators: [Validators.minLength(3)],
+        }),
     });
     rows: AethelReturnItem[] = [];
     loading$ = this.apiService.loading$;
@@ -46,10 +48,10 @@ export class AethelComponent implements OnInit {
     }
 
     public search(): void {
-        if (!this.aethelInput.value) {
+        if (!this.form.controls.aethelInput.value) {
             return;
         }
-        this.apiService.input$.next(this.aethelInput.value);
+        this.apiService.input$.next(this.form.controls.aethelInput.value);
     }
 
     private addUniqueKeys(items: AethelReturnItem[]): AethelReturnItem[] {

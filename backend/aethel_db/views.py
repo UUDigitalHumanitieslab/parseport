@@ -7,9 +7,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from aethel import ProofBank
 from aethel.frontend import Sample, LexicalItem
-from aethel_db.filters import in_lemma, in_word
 from parseport.logger import logger
-from src.aethel.scripts.search import search
+from aethel_db.search import search, in_lemma, in_word
 
 DATASET_PATH = getattr(settings, "DATASET_PATH")
 try:

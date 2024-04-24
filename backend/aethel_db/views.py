@@ -18,7 +18,6 @@ except FileNotFoundError:
     raise FileNotFoundError(f"Æthel dataset not found.")
 
 
-
 @dataclass
 class AethelSample:
     name: str
@@ -77,9 +76,9 @@ class AethelListResponse:
 
 
 class AethelQueryView(APIView):
-    def get(self, request: HttpRequest):
+    def get(self, request: HttpRequest) -> JsonResponse:
         query_input = self.request.query_params.get("query", None)
-        if query_input is None:
+        if query_input is None or len(query_input) < 3:
             return AethelListResponse().json_response()
 
         # Filter samples based on query

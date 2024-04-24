@@ -41,7 +41,7 @@ export class ProofPipe implements PipeTransform {
         value = value.replace(/⟶/g, " ⊸ ");
 
         // Wrap all variables (i.e. instances of 'c' followed by one or multiple numbers) in a <var> tag.
-        value = value.replace(/(c\d+)/g, '<var class="variable">$1</var>');
+        value = value.replace(/(c\d+)/g, '<var>$1</var>');
 
         // Put the variable numbers in subscript.
         value = value.replace(/c(\d+)/g, "c<sub>$1</sub>");

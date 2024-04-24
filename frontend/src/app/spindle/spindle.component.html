@@ -56,7 +56,7 @@
     <div class="block is-size-4" [innerHTML]="term | proof"></div>
     <table class="table">
         <tr *ngFor="let phrase of lexicalPhrases; index as i">
-            <td [innerHTML]="'c'+i | proof"></td>
+            <td [innerHTML]="'<span class=&quot;proof&quot;><var>c</var><sub>'+i+'</sub></span>'"></td>
             <td>
                 <span *ngFor="let item of phrase.items">{{ item.word }} </span>
             </td>

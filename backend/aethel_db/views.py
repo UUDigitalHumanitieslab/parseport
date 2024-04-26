@@ -14,8 +14,7 @@ DATASET_PATH = getattr(settings, "DATASET_PATH")
 try:
     dataset = ProofBank.load_data(DATASET_PATH)
 except FileNotFoundError:
-    logger.error(f"Æthel dataset not found.")
-    raise FileNotFoundError(f"Æthel dataset not found.")
+    logger.critical(f"Æthel dataset not found.")
 
 
 @dataclass

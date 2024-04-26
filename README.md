@@ -31,15 +31,13 @@ In overview, your file structure should be as follows.
     |   └── Dockerfile
     └── backend
         ├── Dockerfile
-        └── aethel_db
-            └── data
-                └── aethel.pickle
+        └── aethel.pickle
 ```
 
 Note that you will need two data files in order to run this project.
 
 - `model_weights.pt` should be put in the root directory of the `spindle-server` project. It can be downloaded from _Yoda-link here_.
-- `aethel.pickle` should live at the `backend/aethel_db/data/` directory of the `parseport` project. You can find it in the zip archive [here](https://github.com/konstantinosKokos/aethel/tree/stable/data).
+- `aethel.pickle` should live at `parseport/backend/`. You can find it in the zip archive [here](https://github.com/konstantinosKokos/aethel/tree/stable/data).
 
 This application can be run in both `production` and `development` mode. Either mode will start a network of five containers.
 

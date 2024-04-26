@@ -54,7 +54,15 @@ export class AethelComponent implements OnInit {
         this.apiService.input$.next(this.form.controls.aethelInput.value);
     }
 
+    /**
+     * Adds unique keys to the items in the array. This is needed for the table to keep track of the data and automatically collapse rows when the data changes.
+     * @param items - The array of AethelReturnItem objects.
+     * @returns An array of AethelReturnItem objects with unique keys.
+     */
     private addUniqueKeys(items: AethelReturnItem[]): AethelReturnItem[] {
-        return items.map((item, index) => ({ ...item, key: index }));
+        return items.map((item, index) => ({
+            ...item,
+            key: `${index}-${item.lemma}-${item.word}-${item.type}`,
+        }));
     }
 }

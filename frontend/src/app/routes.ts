@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 
 import { HomeComponent } from './home/home.component';
 import { SpindleComponent } from './spindle/spindle.component';
+import { AethelComponent } from './aethel/aethel.component';
 import { SpindleAboutComponent } from './spindle/spindle-about/spindle-about.component';
 import { SpindleNotationComponent } from './spindle/spindle-notation/spindle-notation.component';
 import { ReferencesComponent } from './references/references.component';
@@ -29,8 +30,8 @@ const routes: Routes = [
         ]
     },
     {
-        path: 'alpino',
-        component: HomeComponent,
+        path: 'æthel',
+        component: AethelComponent,
     },
     {
         path: 'about',

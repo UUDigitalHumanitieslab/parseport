@@ -1,0 +1,21 @@
+.table-container {
+    margin-top: 2em;
+}
+
+.aethel-input-container {
+    display: flex;
+    gap: 1em;
+}
+
+.no-results {
+    text-align: center;
+}
+
+.expand-button {
+    width: 40px;
+}
+
+.expanded-row .button-container {
+    text-align: center;
+    vertical-align: middle;
+}

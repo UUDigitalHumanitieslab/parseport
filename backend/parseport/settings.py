@@ -18,10 +18,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-1234567890')
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-1234567890")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = int(os.getenv('DJANGO_DEBUG', 0)) == 1
+DEBUG = int(os.getenv("DJANGO_DEBUG", 0)) == 1
 
 # Application definition
 
@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "revproxy",
     "corsheaders",
+    "aethel_db",
 ]
 
 MIDDLEWARE = [
@@ -43,10 +44,8 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-
     # NOTE: CSRF is disabled; since we are not using authentication.
     # "django.middleware.csrf.CsrfViewMiddleware",
-
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -118,7 +117,14 @@ STATIC_URL = "/static/"
 
 STATICFILES_DIRS = []
 
-ALLOWED_HOSTS = ['pp-dj']
+ALLOWED_HOSTS = ["pp-dj"]
+if DEBUG:
+    ALLOWED_HOSTS.append("localhost")
 
 SPINDLE_URL = f"http://pp-spindle:32768/"
 LATEX_SERVICE_URL = f"http://pp-latex:32769/"
+
+DATA_SUBSET_PATH = "./aethel_db/data/aethel_subset.pickle"
+FULL_DATASET_PATH = "./aethel.pickle"
+
+DATASET_PATH = DATA_SUBSET_PATH if DEBUG else FULL_DATASET_PATH

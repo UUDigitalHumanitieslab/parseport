@@ -25,3 +25,38 @@
         }
     }
 }
+
+// PrimeNG table styling
+.p-datatable-thead > tr > th, td {
+    padding: 0.75rem 0.75rem;
+}
+
+.p-datatable th {
+    white-space: nowrap;
+    min-width: min-content;
+}
+
+// Styling of variables / mathematical notation
+.mono {
+    font-family: monospace;
+}
+
+var {
+    font-family: 'Times New Roman', Times, serif;
+}
+
+// Used by the Proof Pipe.
+// Because the pipe replaces innerHTML, it uses global styles.
+.proof {
+    font-family: 'Times New Roman', Times, serif;
+
+    var {
+        font-family: monospace;
+        font-style: normal;
+    }
+
+    sup, .term {
+        font-style: italic;
+    }
+}
+

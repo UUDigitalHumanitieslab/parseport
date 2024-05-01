@@ -74,7 +74,7 @@ services:
         <<: *spindle-prod
         image: pp-spindle-dev
         profiles: ["dev"]
-        command: flask run --host=0.0.0.0 -p 32768
+        command: flask run --host 0.0.0.0 --port 32768
 
     latex-prod: &latex-prod
         image: pp-latex-prod
@@ -93,7 +93,7 @@ services:
         <<: *latex-prod
         image: pp-latex-dev
         profiles: ["dev"]
-        command: flask run --host=0.0.0.0 -p 32769
+        command: flask run --host 0.0.0.0 --port 32769
 
 networks:
     parseport:

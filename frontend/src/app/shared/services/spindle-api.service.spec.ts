@@ -1,16 +1,16 @@
 import { TestBed } from "@angular/core/testing";
 
-import { ApiService } from "./api.service";
+import { SpindleApiService } from "./spindle-api.service";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 
-describe("ApiService", () => {
-    let service: ApiService;
+describe("SpindleApiService", () => {
+    let service: SpindleApiService;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule],
+            imports: [HttpClientTestingModule]
         });
-        service = TestBed.inject(ApiService);
+        service = TestBed.inject(SpindleApiService);
     });
 
     it("should be created", () => {

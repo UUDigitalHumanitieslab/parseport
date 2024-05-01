@@ -1,16 +1,12 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, DestroyRef, OnInit } from "@angular/core";
 import { FormControl, Validators } from "@angular/forms";
-import { Subject, takeUntil } from "rxjs";
-import {
-    ApiService,
-    LexicalPhrase,
-    SpindleMode,
-} from "../shared/services/api.service";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { ErrorHandlerService } from "../shared/services/error-handler.service";
 import { AlertService } from "../shared/services/alert.service";
 import { AlertType } from "../shared/components/alert/alert.component";
-
 import { faDownload, faCopy } from "@fortawesome/free-solid-svg-icons";
+import { LexicalPhrase, SpindleMode } from "../shared/services/types";
+import { SpindleApiService } from "../shared/services/spindle-api.service";
 
 interface TextOutput {
     extension: "json" | "tex";
@@ -22,32 +18,29 @@ interface TextOutput {
     templateUrl: "./spindle.component.html",
     styleUrls: ["./spindle.component.scss"],
 })
-export class SpindleComponent implements OnInit, OnDestroy {
+export class SpindleComponent implements OnInit {
     spindleInput = new FormControl<string>("", {
         validators: [Validators.required],
     });
     term: string | null = null;
     textOutput: TextOutput | null = null;
     lexicalPhrases: LexicalPhrase[] = [];
-    loading: SpindleMode | null = null;
+    loading$ = this.apiService.loading$;
 
     faCopy = faCopy;
     faDownload = faDownload;
 
-    private destroy$ = new Subject<void>();
-
     constructor(
-        private apiService: ApiService,
+        private apiService: SpindleApiService,
         private alertService: AlertService,
-        private errorHandler: ErrorHandlerService
+        private errorHandler: ErrorHandlerService,
+        private destroyRef: DestroyRef,
     ) {}
 
     ngOnInit(): void {
-        this.apiService
-            .spindleResult$()
-            .pipe(takeUntil(this.destroy$))
+        this.apiService.output$
+            .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe((response) => {
-                this.loading = null;
                 // HTTP error
                 if (!response) {
                     return;
@@ -104,8 +97,7 @@ export class SpindleComponent implements OnInit, OnDestroy {
         if (this.spindleInput.invalid || !userInput) {
             return;
         }
-        this.loading = mode;
-        this.apiService.spindleInput$.next({
+        this.apiService.input$.next({
             mode,
             sentence: userInput,
         });
@@ -147,11 +139,6 @@ export class SpindleComponent implements OnInit, OnDestroy {
         if (extension !== "pdf") {
             this.revokeObjectURL(url);
         }
-    }
-
-    ngOnDestroy(): void {
-        this.destroy$.next();
-        this.destroy$.complete();
     }
 
     private clearResults(): void {

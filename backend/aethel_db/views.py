@@ -1,20 +1,24 @@
 from dataclasses import asdict, dataclass, field
 from typing import List, Optional
+
 from django.http import HttpRequest, JsonResponse
 from django.conf import settings
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
+
 from aethel import ProofBank
 from aethel.frontend import LexicalItem
-from parseport.logger import logger
 from aethel_db.search import search, in_lemma, in_word
 
+
 DATASET_PATH = getattr(settings, "DATASET_PATH")
-try:
+dataset: Optional[ProofBank] = None
+
+
+def load_dataset():
+    global dataset
     dataset = ProofBank.load_data(DATASET_PATH)
-except FileNotFoundError:
-    logger.critical(f"Æthel dataset not found.")
 
 
 @dataclass

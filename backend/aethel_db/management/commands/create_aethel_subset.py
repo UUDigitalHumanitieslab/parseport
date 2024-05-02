@@ -4,13 +4,15 @@ from django.core.management.base import BaseCommand, CommandParser
 
 from parseport.logger import logger
 
-FULL_DATASET_PATH = getattr(settings, "FULL_DATASET_PATH")
-DATA_SUBSET_PATH = getattr(settings, "DATA_SUBSET_PATH")
 
 class Command(BaseCommand):
+    requires_system_checks = []
+
     help = "Creates a subset of the Aethel dataset and outputs it to a new pickle file. Retrieves the passed number of records (default = 50) from each of the three subsets included: 'train', 'dev', and 'test'."
 
     def add_arguments(self, parser: CommandParser) -> None:
+        parser.add_argument('src')
+        parser.add_argument('dst')
         parser.add_argument(
             "--number-of-records",
             "-n",
@@ -32,7 +34,7 @@ class Command(BaseCommand):
         subset_size = options["number-of-records"]
 
         logger.info(f"Creating a subset of the Aethel dataset with size {subset_size}...")
-        with open(FULL_DATASET_PATH, "rb") as f:
+        with open(options['src'], "rb") as f:
             version, (train, dev, test) = pickle.load(f)
             logger.info("Full pickle loaded!")
 
@@ -52,7 +54,7 @@ class Command(BaseCommand):
         new_dev = dev[:clamped]
 
         logger.info("Writing smaller dataset to new pickle file...")
-        with open(DATA_SUBSET_PATH, "wb") as f:
+        with open(options['dst'], "wb") as f:
             pickle_contents = version, (new_train, new_dev, new_test)
             pickle.dump(pickle_contents, f)
 

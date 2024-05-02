@@ -1,3 +1,12 @@
-from django.db import models
+from typing import Optional
 
-# Create your models here.
+from django.conf import settings
+
+from aethel import ProofBank
+
+dataset: Optional[ProofBank] = None
+
+
+def load_dataset():
+    global dataset
+    dataset = ProofBank.load_data(settings.DATASET_PATH)

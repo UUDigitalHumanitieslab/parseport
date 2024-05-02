@@ -2,23 +2,16 @@ from dataclasses import asdict, dataclass, field
 from typing import List, Optional
 
 from django.http import HttpRequest, JsonResponse
-from django.conf import settings
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from aethel import ProofBank
 from aethel.frontend import LexicalItem
-from aethel_db.search import search, in_lemma, in_word
+
+from .models import dataset
+from .search import search, in_lemma, in_word
 
 
-DATASET_PATH = getattr(settings, "DATASET_PATH")
-dataset: Optional[ProofBank] = None
-
-
-def load_dataset():
-    global dataset
-    dataset = ProofBank.load_data(DATASET_PATH)
 
 
 @dataclass

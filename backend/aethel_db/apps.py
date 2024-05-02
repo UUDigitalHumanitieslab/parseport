@@ -1,19 +1,19 @@
+import logging
+import os
+from django.conf import settings
 from django.apps import AppConfig
-from django.core import checks
 
-from .views import load_dataset
+from .models import load_dataset
+
+log = logging.getLogger()
+
 
 class AethelDbConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "aethel_db"
 
-
-@checks.register()
-def check_aethel_dataset(app_configs, **kwargs):
-    try:
-        load_dataset()
-        return []
-    except FileNotFoundError:
-        return [
-            checks.Error(f"Æthel dataset not found.")
-        ]
+    def ready(self):
+        if os.path.exists(settings.DATASET_PATH):
+            load_dataset()
+        else:
+            log.critical("Æthel dataset not found.")

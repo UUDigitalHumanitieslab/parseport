@@ -1,5 +1,6 @@
 <h2 class="title is-2" i18n>Spindle</h2>
 
+@if (status$ | async; as status) {
 <div class="columns">
     <div class="column intro is-two-thirds">
         <p i18n>Spindle is a neurosymbolic typelogical parser for Dutch.</p>
@@ -15,41 +16,51 @@
             <a [routerLink]="['/refs']">References</a>. The notations used are
             explained under <a [routerLink]="['notation']">Notation</a>.
         </p>
-        <form class="form">
-            <div class="field">
-                <label for="spindle-input" class="label">Input:</label>
-                <input
-                    id="spindle-input"
-                    class="input"
-                    [class.is-danger]="
-                        spindleInput.touched && spindleInput.invalid
-                    "
-                    type="text"
-                    [formControl]="spindleInput"
-                    (keydown.enter)="$event.preventDefault(); parse()"
-                    placeholder="Enter a sentence..."
-                    placeholder-i18n
-                />
-                <p
-                    *ngIf="spindleInput.touched && spindleInput.invalid"
-                    class="help is-danger"
-                    i18n
-                >
-                    This field is required.
-                </p>
-            </div>
-        </form>
+        @if (status) {
+            <form class="form">
+                <div class="field">
+                    <label for="spindle-input" class="label">Input:</label>
+                    <input
+                        id="spindle-input"
+                        class="input"
+                        [class.is-danger]="
+                            spindleInput.touched && spindleInput.invalid
+                            "
+                        type="text"
+                        [formControl]="spindleInput"
+                        (keydown.enter)="$event.preventDefault(); parse()"
+                        placeholder="Enter a sentence..."
+                        placeholder-i18n
+                    />
+                    <p
+                        *ngIf="spindleInput.touched && spindleInput.invalid"
+                        class="help is-danger"
+                        i18n
+                    >
+                        This field is required.
+                    </p>
+                </div>
+            </form>
+        }
     </div>
 </div>
 
-<div class="button-container buttons mb-3">
-    <pp-export-button
-        i18n-buttonText
-        buttonText="Parse"
-        [isLoading]="(loading$ | async) === 'term-table'"
-        (click)="parse()"
-    ></pp-export-button>
-</div>
+@if (status) {
+    <div class="button-container buttons mb-3">
+        <pp-export-button
+            i18n-buttonText
+            buttonText="Parse"
+            [isLoading]="(loading$ | async) === 'term-table'"
+            (click)="parse()"
+        ></pp-export-button>
+    </div>
+}
+@else {
+    <p class="notification" i18n>
+        Spindle is temporarily unavailable.
+    </p>
+}
+}
 
 <div *ngIf="term && lexicalPhrases">
     <h4 i18n>Term:</h4>

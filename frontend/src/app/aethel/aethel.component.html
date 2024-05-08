@@ -78,8 +78,8 @@
                         <fa-icon
                             [icon]="
                                 expanded === true
-                                    ? faChevronDown
-                                    : faChevronRight
+                                    ? icons.chevronDown
+                                    : icons.chevronRight
                             "
                         ></fa-icon>
                     </button>
@@ -103,13 +103,13 @@
                     [innerHTML]="sample.sentence | highlight: row.word"
                 ></td>
                 <td class="button-container" colspan="1">
-                    <button
-                        type="button"
+                    <a
+                        [routerLink]="getSampleURL(sample.name)"
                         class="button is-primary"
                         i18n
                     >
-                        Go to proof
-                    </button>
+                        Go to sample
+                    </a>
                 </td>
             </tr>
             }

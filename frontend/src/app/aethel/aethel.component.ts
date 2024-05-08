@@ -15,17 +15,19 @@ import {
     styleUrl: "./aethel.component.scss",
 })
 export class AethelComponent implements OnInit {
-    form = new FormGroup({
+    public form = new FormGroup({
         aethelInput: new FormControl<string>("", {
             validators: [Validators.minLength(3)],
         }),
     });
-    rows: AethelReturnItem[] = [];
-    loading$ = this.apiService.loading$;
-    submitted = this.apiService.output$.pipe(map(() => true));
+    public rows: AethelReturnItem[] = [];
+    public loading$ = this.apiService.loading$;
+    public submitted = this.apiService.output$.pipe(map(() => true));
 
-    faChevronRight = faChevronRight;
-    faChevronDown = faChevronDown;
+    public icons = {
+        chevronRight: faChevronRight,
+        chevronDown: faChevronDown,
+    };
 
     constructor(
         private apiService: AethelApiService,
@@ -52,6 +54,10 @@ export class AethelComponent implements OnInit {
             return;
         }
         this.apiService.input$.next(this.form.controls.aethelInput.value);
+    }
+
+    public getSampleURL(sampleName: string): string[] {
+        return ["sample", sampleName.replace(".xml", "")];
     }
 
     /**

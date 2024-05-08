@@ -41,14 +41,19 @@ export interface AethelSample {
     sentence: string;
 }
 
-export interface AethelReturnItem {
+export interface AethelListReturnItem {
     lemma: string;
     word: string;
     type: string;
     samples: AethelSample[];
 }
 
-export interface AethelReturn {
-    results: AethelReturnItem[];
+export interface AethelListReturn {
+    results: AethelListReturnItem[];
     error: string | null;
+}
+
+// TEMPORARY
+export interface AethelDetailReturn {
+    name: string;
 }

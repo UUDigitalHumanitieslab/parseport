@@ -1,7 +1,7 @@
 import { Component, DestroyRef, OnInit } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
-import { AethelReturnItem } from "../shared/services/types";
+import { AethelListReturnItem } from "../shared/services/types";
 import { AethelApiService } from "../shared/services/aethel-api.service";
 import { map } from "rxjs";
 import {
@@ -20,7 +20,7 @@ export class AethelComponent implements OnInit {
             validators: [Validators.minLength(3)],
         }),
     });
-    public rows: AethelReturnItem[] = [];
+    public rows: AethelListReturnItem[] = [];
     public loading$ = this.apiService.loading$;
     public submitted = this.apiService.output$.pipe(map(() => true));
 
@@ -65,7 +65,9 @@ export class AethelComponent implements OnInit {
      * @param items - The array of AethelReturnItem objects.
      * @returns An array of AethelReturnItem objects with unique keys.
      */
-    private addUniqueKeys(items: AethelReturnItem[]): AethelReturnItem[] {
+    private addUniqueKeys(
+        items: AethelListReturnItem[],
+    ): AethelListReturnItem[] {
         return items.map((item, index) => ({
             ...item,
             key: `${index}-${item.lemma}-${item.word}-${item.type}`,

@@ -113,5 +113,8 @@ class AethelQueryView(APIView):
 
 
 class AethelDetailView(APIView):
-    def get(self, request: HttpRequest, pk: int):
+    def get(self, request: HttpRequest):
+        query_input = self.request.query_params.get("sample-name", None)
+        print('query_input:', query_input)
+
         return Response("Success!", status=status.HTTP_200_OK)

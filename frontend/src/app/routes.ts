@@ -6,6 +6,7 @@ import { AethelComponent } from './aethel/aethel.component';
 import { SpindleAboutComponent } from './spindle/spindle-about/spindle-about.component';
 import { SpindleNotationComponent } from './spindle/spindle-notation/spindle-notation.component';
 import { ReferencesComponent } from './references/references.component';
+import { SampleComponent } from './sample/sample.component';
 
 const routes: Routes = [
     {
@@ -31,7 +32,16 @@ const routes: Routes = [
     },
     {
         path: 'æthel',
-        component: AethelComponent,
+        children: [
+            {
+                path: 'sample/:sampleName',
+                component: SampleComponent
+            },
+            {
+                path: '',
+                component: AethelComponent
+            }
+        ]
     },
     {
         path: 'about',

@@ -12,6 +12,8 @@ from .models import dataset
 from .search import search, in_lemma, in_word
 
 
+def aethel_status():
+    return dataset is not None
 
 
 @dataclass

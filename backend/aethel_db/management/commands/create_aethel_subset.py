@@ -1,5 +1,4 @@
 import pickle
-from django.conf import settings
 from django.core.management.base import BaseCommand, CommandParser
 
 from parseport.logger import logger
@@ -11,8 +10,8 @@ class Command(BaseCommand):
     help = "Creates a subset of the Aethel dataset and outputs it to a new pickle file. Retrieves the passed number of records (default = 50) from each of the three subsets included: 'train', 'dev', and 'test'."
 
     def add_arguments(self, parser: CommandParser) -> None:
-        parser.add_argument('src')
-        parser.add_argument('dst')
+        parser.add_argument('src', help="Path to dataset (pickle format)")
+        parser.add_argument('dst', help="Path to subset output")
         parser.add_argument(
             "--number-of-records",
             "-n",

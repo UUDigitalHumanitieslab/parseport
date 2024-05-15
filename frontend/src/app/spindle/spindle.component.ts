@@ -7,7 +7,7 @@ import { AlertType } from "../shared/components/alert/alert.component";
 import { faDownload, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { LexicalPhrase, SpindleMode } from "../shared/services/types";
 import { SpindleApiService } from "../shared/services/spindle-api.service";
-import { Subject, mergeWith, share, switchMap, takeUntil, takeWhile, timer, withLatestFrom } from "rxjs";
+import { Subject, filter, map, share, switchMap, takeUntil, timer } from "rxjs";
 import { StatusService } from "../shared/services/status.service";
 
 interface TextOutput {
@@ -34,9 +34,11 @@ export class SpindleComponent implements OnInit {
 
     stopStatus$ = new Subject<void>();
 
-    status$ = timer(0, 5000).pipe(
+    spindleReady$ = timer(0, 5000).pipe(
         takeUntil(this.stopStatus$),
-        switchMap(() => this.statusService.get())
+        switchMap(() => this.statusService.get()),
+        map(status => status.spindle),
+        share()
     );
 
     constructor(
@@ -48,14 +50,10 @@ export class SpindleComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        this.status$.pipe(
+        this.spindleReady$.pipe(
+            filter(ready => ready === true),
             takeUntilDestroyed(this.destroyRef)
-        ).subscribe(status => {
-            if (status.spindle) {
-                // spindle is ready, stop polling
-                this.stopStatus$.next();
-            }
-        });
+        ).subscribe(() => this.stopStatus$.next());
 
         this.apiService.output$
             .pipe(takeUntilDestroyed(this.destroyRef))

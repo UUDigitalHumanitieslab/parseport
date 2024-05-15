@@ -12,8 +12,7 @@ interface Status {
     providedIn: "root"
 })
 export class StatusService{
-    constructor(private http: HttpClient) {
-    }
+    constructor(private http: HttpClient) {}
 
     get(): Observable<Status> {
         return this.http.get<Status>(`${environment.apiUrl}status/`);

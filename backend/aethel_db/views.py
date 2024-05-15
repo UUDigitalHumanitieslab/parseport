@@ -28,8 +28,6 @@ class AethelListItem:
     word: str
     type: str
     samples: List[AethelSample] = field(default_factory=list)
-
-
 @dataclass
 class AethelListResponse:
     """

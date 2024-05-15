@@ -4,8 +4,7 @@ from django.conf import settings
 from django.apps import AppConfig
 
 from .models import load_dataset
-
-log = logging.getLogger()
+from parseport.logger import logger
 
 
 class AethelDbConfig(AppConfig):
@@ -16,4 +15,4 @@ class AethelDbConfig(AppConfig):
         if os.path.exists(settings.DATASET_PATH):
             load_dataset()
         else:
-            log.critical("Æthel dataset not found.")
+            logger.critical("Æthel dataset not found.")

@@ -1,6 +1,10 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
 
 import { SampleComponent } from "./sample.component";
+import { RouterModule } from "@angular/router";
+import { routes } from "../routes";
+import { HttpClientTestingModule } from "@angular/common/http/testing";
+
 
 describe("SampleComponent", () => {
     let component: SampleComponent;
@@ -8,7 +12,11 @@ describe("SampleComponent", () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [SampleComponent],
+            imports: [
+                HttpClientTestingModule,
+                RouterModule.forRoot(routes)
+            ],
+            declarations: [SampleComponent]
         }).compileComponents();
 
         fixture = TestBed.createComponent(SampleComponent);
@@ -19,4 +27,6 @@ describe("SampleComponent", () => {
     it("should create", () => {
         expect(component).toBeTruthy();
     });
+
+    it("should construct a valid route", () => { });
 });

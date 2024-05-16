@@ -33,7 +33,7 @@ export class AethelComponent implements OnInit {
     constructor(
         private apiService: AethelApiService,
         private destroyRef: DestroyRef,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
     ) {}
 
     ngOnInit(): void {
@@ -51,14 +51,16 @@ export class AethelComponent implements OnInit {
             });
 
         // If the route has a query parameter, we run a search with that query immediately.
-        this.route.queryParams.pipe(
-            first(),
-            map(queryParams => queryParams['query']),
-            takeUntilDestroyed(this.destroyRef)
-        ).subscribe(query => {
-            this.form.controls.aethelInput.setValue(query);
-            this.search();
-        });
+        this.route.queryParams
+            .pipe(
+                first(),
+                map((queryParams) => queryParams["query"]),
+                takeUntilDestroyed(this.destroyRef),
+            )
+            .subscribe((query) => {
+                this.form.controls.aethelInput.setValue(query);
+                this.search();
+            });
     }
 
     public search(): void {

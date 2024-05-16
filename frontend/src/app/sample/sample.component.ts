@@ -12,26 +12,23 @@ import { AethelDetailResult, LexicalPhrase } from "../shared/types";
 export class SampleComponent {
     private sampleName = this.route.snapshot.params["sampleName"];
     private sample$ = this.apiService.sampleResult$(this.sampleName);
-
     public sampleResult$ = this.sample$.pipe(
-        map((result) => result.result),
+        map((response) => response?.result),
         filter((result): result is AethelDetailResult => result !== null),
     );
-
-    public loading = true;
 
     constructor(
         private route: ActivatedRoute,
         private apiService: AethelApiService,
-        private router: Router
+        private router: Router,
     ) {}
 
     public routeToAethel(items: LexicalPhrase["items"]): void {
         const combined = items.map((item) => item.word).join(" ");
         this.router.navigate(["/æthel"], {
             queryParams: {
-                query: combined
-            }
+                query: combined,
+            },
         });
     }
 }

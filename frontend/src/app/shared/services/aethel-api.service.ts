@@ -1,7 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import {
-    EMPTY,
     Observable,
     Subject,
     catchError,
@@ -29,6 +28,7 @@ export class AethelApiService
     throttledInput$ = this.input$.pipe(
         distinctUntilChanged(),
         throttleTime(300),
+        share(),
     );
 
     output$ = this.throttledInput$.pipe(
@@ -67,13 +67,13 @@ export class AethelApiService
         private errorHandler: ErrorHandlerService,
     ) {}
 
-    public sampleResult$(sampleName: string): Observable<AethelDetail> {
+    public sampleResult$(sampleName: string): Observable<AethelDetail | null> {
         const headers = new HttpHeaders({
             "Content-Type": "application/json",
         });
         const params = new HttpParams().set("sample-name", sampleName);
         return this.http
-            .get<AethelDetail>(`${environment.apiUrl}/aethel/sample`, {
+            .get<AethelDetail>(`${environment.apiUrl}aethel/sample`, {
                 headers,
                 params,
             })
@@ -83,7 +83,7 @@ export class AethelApiService
                         error,
                         $localize`An error occurred while handling your input.`,
                     );
-                    return EMPTY;
+                    return of(null);
                 }),
             );
     }

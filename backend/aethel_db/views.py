@@ -87,7 +87,7 @@ class AethelQueryView(APIView):
         # First we select all relevant samples from the dataset that contain the query string.
         query_result = search(
             bank=dataset.samples,
-            query=in_word(query_input.lower()) | in_lemma(query_input.lower()),
+            query=in_word(query_input) | in_lemma(query_input),
         )
 
         def item_contains_query_string(item: LexicalItem) -> bool:

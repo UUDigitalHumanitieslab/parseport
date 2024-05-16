@@ -2,7 +2,7 @@ import { ErrorHandler, Injectable } from "@angular/core";
 import { AlertService } from "./alert.service";
 import { AlertType } from "../components/alert/alert.component";
 import { HttpErrorResponse } from "@angular/common/http";
-import { SpindleErrorSource } from "./types";
+import { SpindleErrorSource } from "../types";
 
 const spindleErrorMapping: Record<SpindleErrorSource, string> = {
     [SpindleErrorSource.LATEX]: $localize`An error occurred while compiling your PDF.`,

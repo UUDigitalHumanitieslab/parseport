@@ -53,7 +53,22 @@ export interface AethelListReturn {
     error: string | null;
 }
 
-// TEMPORARY
-export interface AethelDetailReturn {
+// This should be the same as the one in the backend.
+export enum AethelDetailError {
+    NO_QUERY_INPUT = "NO_QUERY_INPUT",
+    SAMPLE_NOT_FOUND = "SAMPLE_NOT_FOUND",
+    MULTIPLE_FOUND = "MULTIPLE_FOUND",
+}
+
+export interface AethelDetailResult {
+    sentence: string;
     name: string;
+    term: string;
+    subset: string;
+    phrases: LexicalPhrase[];
+}
+
+export interface AethelDetail {
+    error: AethelDetailError | null;
+    result: AethelDetailResult;
 }

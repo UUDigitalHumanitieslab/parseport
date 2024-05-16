@@ -1,7 +1,7 @@
 import { Component, DestroyRef, OnInit } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
-import { AethelListReturnItem } from "../shared/services/types";
+import { AethelListReturnItem } from "../shared/types";
 import { AethelApiService } from "../shared/services/aethel-api.service";
 import { map } from "rxjs";
 import {

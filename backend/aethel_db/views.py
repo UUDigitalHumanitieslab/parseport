@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from aethel import ProofBank
 from aethel.frontend import LexicalItem
+from spindle.utils import serialize_phrases_with_infix_notation
 from parseport.logger import logger
 from aethel_db.search import search, in_lemma, in_word
 from aethel.frontend import Sample
@@ -144,7 +145,7 @@ class AethelDetailResponse:
             name=sample.name,
             term=str(sample.proof.term),
             subset=sample.subset,
-            phrases=[phrase.json() for phrase in sample.lexical_phrases]
+            phrases=serialize_phrases_with_infix_notation(sample.lexical_phrases),
         )
 
     def json_response(self) -> JsonResponse:

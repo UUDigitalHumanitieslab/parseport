@@ -2,7 +2,6 @@
 <section class="hero">
     <div class="hero-body">
         <p class="title">{{ sample.sentence }}</p>
-        <p class="subtitle">Hero subtitle</p>
     </div>
 </section>
 
@@ -25,7 +24,7 @@
                 </span>
             </td>
             <td>
-                <span *ngFor="let item of phrase.items">{{ item.word }}</span>
+                <span *ngFor="let item of phrase.items">{{ item.word }} </span>
             </td>
             <td><span class="proof" [innerHtml]="phrase.type | proof"></span></td>
             <td>

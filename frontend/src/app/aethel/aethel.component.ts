@@ -3,11 +3,12 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { AethelListReturnItem } from "../shared/types";
 import { AethelApiService } from "../shared/services/aethel-api.service";
-import { map } from "rxjs";
+import { first, map } from "rxjs";
 import {
     faChevronDown,
     faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
+import { ActivatedRoute } from "@angular/router";
 
 @Component({
     selector: "pp-aethel",
@@ -32,6 +33,7 @@ export class AethelComponent implements OnInit {
     constructor(
         private apiService: AethelApiService,
         private destroyRef: DestroyRef,
+        private route: ActivatedRoute
     ) {}
 
     ngOnInit(): void {
@@ -47,9 +49,21 @@ export class AethelComponent implements OnInit {
                 }
                 this.rows = this.addUniqueKeys(response.results);
             });
+
+        // If the route has a query parameter, we run a search with that query immediately.
+        this.route.queryParams.pipe(
+            first(),
+            map(queryParams => queryParams['query']),
+            takeUntilDestroyed(this.destroyRef)
+        ).subscribe(query => {
+            this.form.controls.aethelInput.setValue(query);
+            this.search();
+        });
     }
 
     public search(): void {
+        this.form.markAllAsTouched();
+        this.form.controls.aethelInput.updateValueAndValidity();
         if (!this.form.controls.aethelInput.value) {
             return;
         }

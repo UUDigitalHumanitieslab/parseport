@@ -1,14 +1,15 @@
 from dataclasses import asdict, dataclass, field
+from enum import Enum
 from typing import List, Optional
 from django.http import HttpRequest, JsonResponse
 from django.conf import settings
 from rest_framework import status
 from rest_framework.views import APIView
-from rest_framework.response import Response
 from aethel import ProofBank
 from aethel.frontend import LexicalItem
 from parseport.logger import logger
 from aethel_db.search import search, in_lemma, in_word
+from aethel.frontend import Sample
 
 DATASET_PATH = getattr(settings, "DATASET_PATH")
 try:
@@ -18,7 +19,7 @@ except FileNotFoundError:
 
 
 @dataclass
-class AethelSample:
+class AethelListSample:
     name: str
     sentence: str
 
@@ -28,7 +29,7 @@ class AethelListItem:
     lemma: str
     word: str
     type: str
-    samples: List[AethelSample] = field(default_factory=list)
+    samples: List[AethelListSample] = field(default_factory=list)
 
 
 @dataclass
@@ -61,7 +62,7 @@ class AethelListResponse:
             self.results.append(result_item)
 
         result_item.samples.append(
-            AethelSample(name=sample_name, sentence=sample_sentence)
+            AethelListSample(name=sample_name, sentence=sample_sentence)
         )
 
     def json_response(self) -> JsonResponse:
@@ -112,9 +113,74 @@ class AethelQueryView(APIView):
         return response_object.json_response()
 
 
-class AethelDetailView(APIView):
-    def get(self, request: HttpRequest):
-        query_input = self.request.query_params.get("sample-name", None)
-        print('query_input:', query_input)
+class AethelDetailError(Enum):
+    NO_QUERY_INPUT = "NO_QUERY_INPUT"
+    SAMPLE_NOT_FOUND = "SAMPLE_NOT_FOUND"
+    MULTIPLE_FOUND = "MULTIPLE_FOUND"
 
-        return Response("Success!", status=status.HTTP_200_OK)
+
+aethelDetailStatusCodes = {
+    AethelDetailError.NO_QUERY_INPUT: status.HTTP_400_BAD_REQUEST,
+    AethelDetailError.SAMPLE_NOT_FOUND: status.HTTP_404_NOT_FOUND,
+    AethelDetailError.MULTIPLE_FOUND: status.HTTP_500_INTERNAL_SERVER_ERROR
+}
+
+@dataclass
+class AethelDetailResult:
+    sentence: str
+    name: str
+    term: str
+    subset: str
+    phrases: list[dict]
+
+@dataclass
+class AethelDetailResponse:
+    result: Optional[AethelDetailResult] = None
+    error: Optional[AethelDetailError] = None
+
+    def parse_sample(self, sample: Sample) -> None:
+        self.result = AethelDetailResult(
+            sentence=sample.sentence,
+            name=sample.name,
+            term=str(sample.proof.term),
+            subset=sample.subset,
+            phrases=[phrase.json() for phrase in sample.lexical_phrases]
+        )
+
+    def json_response(self) -> JsonResponse:
+        result = asdict(self.result) if self.result else None
+        status_code = aethelDetailStatusCodes[self.error] if self.error else status.HTTP_200_OK
+
+        return JsonResponse(
+            {
+                "result": result,
+                "error": self.error,
+            },
+            status=status_code,
+        )
+
+
+class AethelDetailView(APIView):
+    def get(self, request: HttpRequest) -> JsonResponse:
+        query_input = self.request.query_params.get("sample-name", None)
+
+        if query_input is None:
+            response = AethelDetailResponse(error=AethelDetailError.NO_QUERY_INPUT)
+            return response.json_response()
+
+        samples = dataset.find_by_name(query_input)
+
+        if len(samples) == 0:
+            response = AethelDetailResponse(error=AethelDetailError.SAMPLE_NOT_FOUND)
+            return response.json_response()
+
+        if len(samples) > 1:
+            response = AethelDetailResponse(error=AethelDetailError.MULTIPLE_FOUND)
+            return response.json_response()
+
+        sample = samples[0]
+
+        response = AethelDetailResponse()
+        response.parse_sample(sample)
+
+        return response.json_response()

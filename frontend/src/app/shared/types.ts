@@ -70,5 +70,5 @@ export interface AethelDetailResult {
 
 export interface AethelDetail {
     error: AethelDetailError | null;
-    result: AethelDetailResult;
+    result: AethelDetailResult | null;
 }

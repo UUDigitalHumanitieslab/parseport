@@ -1,4 +1,4 @@
-@if (sampleResult$ | async; as sample) {
+@if (sampleResult$ | async; as sample;) {
 <section class="hero">
     <div class="hero-body">
         <p class="subtitle" i18n>Sample sentence</p>
@@ -6,9 +6,11 @@
     </div>
 </section>
 
-<section>
-    <h2>Term</h2>
-    <p [innerHTML]="sample.term | proof"></p>
+<section class="message is-dark">
+    <div class="message-header">
+        <p>Term analysis</p>
+    </div>
+    <div class="message-body" [innerHTML]="sample.term | proof"></div>
 </section>
 
 <table class="table is-fullwidth">
@@ -23,16 +25,18 @@
     <tbody>
         <tr *ngFor="let phrase of sample.phrases; index as i">
             <td>
-                <span class="proof">
-                    <var>c<sub>{{ i }}</sub></var>
-                </span>
+                <span class="proof"><var>c<sub>{{ i }}</sub></var></span>
             </td>
             <td>
                 <span *ngFor="let item of phrase.items">{{ item.word }} </span>
             </td>
-            <td><span class="proof" [innerHtml]="phrase.type | proof"></span></td>
             <td>
-                <button class="button is-info" (click)="routeToAethel(phrase.items)">Search in Æthel</button>
+                <span class="proof" [innerHtml]="phrase.type | proof"></span>
+            </td>
+            <td>
+                <button class="button is-info" (click)="routeToAethel(phrase.items)">
+                    Search in Æthel
+                </button>
             </td>
         </tr>
     </tbody>

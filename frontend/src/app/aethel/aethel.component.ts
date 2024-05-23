@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { AethelListReturnItem } from "../shared/types";
 import { AethelApiService } from "../shared/services/aethel-api.service";
-import { first, map } from "rxjs";
+import { map } from "rxjs";
 import {
     faChevronDown,
     faChevronRight,

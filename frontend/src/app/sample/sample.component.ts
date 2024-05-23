@@ -31,4 +31,9 @@ export class SampleComponent {
             },
         });
     }
+
+    public showButton(items: LexicalPhrase["items"]): boolean {
+        const combined = items.map((item) => item.word).join(" ");
+        return combined.length > 2;
+    }
 }

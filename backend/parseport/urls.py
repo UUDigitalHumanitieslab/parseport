@@ -20,6 +20,8 @@ from django.views.generic import RedirectView
 from rest_framework import routers
 
 from spindle.views import SpindleView
+from .views import StatusView
+
 
 api_router = routers.DefaultRouter()  # register viewsets with this router
 
@@ -30,6 +32,7 @@ urlpatterns = [
     path("api-auth", RedirectView.as_view(url="/api-auth/", permanent=True)),
     path("admin/", admin.site.urls),
     path("api/", include(api_router.urls)),
+    path("api/status/", StatusView.as_view(), name="status"),
     path("api/spindle/<str:mode>", SpindleView.as_view(), name="spindle"),
     path("api/aethel/", include("aethel_db.urls")),
     path(

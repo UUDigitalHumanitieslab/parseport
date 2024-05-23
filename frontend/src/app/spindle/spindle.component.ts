@@ -7,6 +7,8 @@ import { AlertType } from "../shared/components/alert/alert.component";
 import { faDownload, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { LexicalPhrase, SpindleMode } from "../shared/services/types";
 import { SpindleApiService } from "../shared/services/spindle-api.service";
+import { Subject, filter, map, share, switchMap, takeUntil, timer } from "rxjs";
+import { StatusService } from "../shared/services/status.service";
 
 interface TextOutput {
     extension: "json" | "tex";
@@ -30,14 +32,29 @@ export class SpindleComponent implements OnInit {
     faCopy = faCopy;
     faDownload = faDownload;
 
+    stopStatus$ = new Subject<void>();
+
+    spindleReady$ = timer(0, 5000).pipe(
+        takeUntil(this.stopStatus$),
+        switchMap(() => this.statusService.get()),
+        map(status => status.spindle),
+        share()
+    );
+
     constructor(
         private apiService: SpindleApiService,
         private alertService: AlertService,
         private errorHandler: ErrorHandlerService,
         private destroyRef: DestroyRef,
+        private statusService: StatusService
     ) {}
 
     ngOnInit(): void {
+        this.spindleReady$.pipe(
+            filter(ready => ready === true),
+            takeUntilDestroyed(this.destroyRef)
+        ).subscribe(() => this.stopStatus$.next());
+
         this.apiService.output$
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe((response) => {

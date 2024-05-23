@@ -1,20 +1,19 @@
 from dataclasses import asdict, dataclass, field
 from typing import List, Optional
+
 from django.http import HttpRequest, JsonResponse
-from django.conf import settings
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from aethel import ProofBank
-from aethel.frontend import LexicalItem
-from parseport.logger import logger
-from aethel_db.search import search, in_lemma, in_word
 
-DATASET_PATH = getattr(settings, "DATASET_PATH")
-try:
-    dataset = ProofBank.load_data(DATASET_PATH)
-except FileNotFoundError:
-    logger.critical(f"Æthel dataset not found.")
+from aethel.frontend import LexicalItem
+
+from .models import dataset
+from .search import search, in_lemma, in_word
+
+
+def aethel_status():
+    return dataset is not None
 
 
 @dataclass
@@ -29,8 +28,6 @@ class AethelListItem:
     word: str
     type: str
     samples: List[AethelSample] = field(default_factory=list)
-
-
 @dataclass
 class AethelListResponse:
     """

@@ -25,7 +25,7 @@ export class SampleComponent {
 
     public routeToAethel(items: LexicalPhrase["items"]): void {
         const combined = items.map((item) => item.word).join(" ");
-        this.router.navigate(["/æthel"], {
+        this.router.navigate(["/aethel"], {
             queryParams: {
                 query: combined,
             },

@@ -31,7 +31,7 @@ const routes: Routes = [
         ]
     },
     {
-        path: 'æthel',
+        path: 'aethel',
         children: [
             {
                 path: 'sample/:sampleName',

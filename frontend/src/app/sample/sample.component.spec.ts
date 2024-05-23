@@ -64,7 +64,7 @@ fdescribe("SampleComponent", () => {
         ];
 
         component.routeToAethel(items);
-        expect(spy).toHaveBeenCalledOnceWith(["/æthel"], {
+        expect(spy).toHaveBeenCalledOnceWith(["/aethel"], {
             queryParams: { query: "testQuery" },
         });
     });

@@ -51,16 +51,11 @@ export class AethelComponent implements OnInit {
             });
 
         // If the route has a query parameter, we run a search with that query immediately.
-        this.route.queryParams
-            .pipe(
-                first(),
-                map((queryParams) => queryParams["query"]),
-                takeUntilDestroyed(this.destroyRef),
-            )
-            .subscribe((query) => {
-                this.form.controls.aethelInput.setValue(query);
-                this.search();
-            });
+        const params = new URLSearchParams(location.search);
+        if (params.has('query')) {
+            this.form.controls.aethelInput.setValue(params.get('query'));
+            this.search();
+        }
     }
 
     public search(): void {

@@ -120,7 +120,7 @@ class AethelDetailError(Enum):
     MULTIPLE_FOUND = "MULTIPLE_FOUND"
 
 
-aethelDetailStatusCodes = {
+aethel_detail_status_codes = {
     AethelDetailError.NO_QUERY_INPUT: status.HTTP_400_BAD_REQUEST,
     AethelDetailError.SAMPLE_NOT_FOUND: status.HTTP_404_NOT_FOUND,
     AethelDetailError.MULTIPLE_FOUND: status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -150,7 +150,7 @@ class AethelDetailResponse:
 
     def json_response(self) -> JsonResponse:
         result = asdict(self.result) if self.result else None
-        status_code = aethelDetailStatusCodes[self.error] if self.error else status.HTTP_200_OK
+        status_code = aethel_detail_status_codes[self.error] if self.error else status.HTTP_200_OK
 
         return JsonResponse(
             {

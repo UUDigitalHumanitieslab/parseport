@@ -3,12 +3,13 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { AethelListReturnItem } from "../shared/types";
 import { AethelApiService } from "../shared/services/aethel-api.service";
-import { map } from "rxjs";
+import { distinctUntilChanged, map } from "rxjs";
 import {
     faChevronDown,
     faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
+import { filterOutNonNull } from "../shared/operators/IsNonNull";
 
 @Component({
     selector: "pp-aethel",
@@ -33,6 +34,7 @@ export class AethelComponent implements OnInit {
     constructor(
         private apiService: AethelApiService,
         private destroyRef: DestroyRef,
+        private router: Router,
         private route: ActivatedRoute,
     ) {}
 
@@ -50,25 +52,38 @@ export class AethelComponent implements OnInit {
                 this.rows = this.addUniqueKeys(response.results);
             });
 
-        // If the route has a query parameter, we run a search with that query immediately.
-        const params = new URLSearchParams(location.search);
-        if (params.has('query')) {
-            this.form.controls.aethelInput.setValue(params.get('query'));
-            this.search();
-        }
+        // Whenever the query parameter changes, we run a new query.
+        this.route.queryParams
+            .pipe(
+                map((queryParams) => queryParams["query"]),
+                filterOutNonNull(),
+                distinctUntilChanged(),
+                takeUntilDestroyed(this.destroyRef),
+            )
+            .subscribe((query) => {
+                this.form.controls.aethelInput.setValue(query);
+                this.apiService.input$.next(query);
+            });
     }
 
-    public search(): void {
+    public submit(): void {
         this.form.markAllAsTouched();
         this.form.controls.aethelInput.updateValueAndValidity();
-        if (!this.form.controls.aethelInput.value) {
+        const query = this.form.controls.aethelInput.value;
+        if (!query) {
             return;
         }
-        this.apiService.input$.next(this.form.controls.aethelInput.value);
+        this.updateUrl(query);
     }
 
     public getSampleURL(sampleName: string): string[] {
         return ["sample", sampleName.replace(".xml", "")];
+    }
+
+    private updateUrl(query: string): void {
+        const url = this.router.createUrlTree([], { relativeTo: this.route, queryParams: { query } }).toString();
+        // This does not actually refresh the page. It just updates the URL in the browser, triggering a new query.
+        this.router.navigateByUrl(url);
     }
 
     /**

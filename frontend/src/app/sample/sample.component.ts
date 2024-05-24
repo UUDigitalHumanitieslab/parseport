@@ -1,8 +1,9 @@
 import { Component } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AethelApiService } from "../shared/services/aethel-api.service";
-import { filter, map } from "rxjs";
-import { AethelDetailResult, LexicalPhrase } from "../shared/types";
+import { map } from "rxjs";
+import { LexicalPhrase } from "../shared/types";
+import { filterOutNonNull } from "../shared/operators/IsNonNull";
 
 @Component({
     selector: "pp-sample",
@@ -14,7 +15,7 @@ export class SampleComponent {
     private sample$ = this.apiService.sampleResult$(this.sampleName);
     public sampleResult$ = this.sample$.pipe(
         map((response) => response?.result),
-        filter((result): result is AethelDetailResult => result !== null),
+        filterOutNonNull()
     );
 
     constructor(

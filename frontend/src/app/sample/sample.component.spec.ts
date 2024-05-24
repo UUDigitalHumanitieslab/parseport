@@ -15,7 +15,7 @@ import {
 import { By } from "@angular/platform-browser";
 import { ProofPipe } from "../shared/pipes/proof.pipe";
 
-fdescribe("SampleComponent", () => {
+describe("SampleComponent", () => {
     let component: SampleComponent;
     let fixture: ComponentFixture<SampleComponent>;
     let router: Router;

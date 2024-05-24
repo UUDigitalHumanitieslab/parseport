@@ -3,13 +3,14 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { AethelListReturnItem } from "../shared/types";
 import { AethelApiService } from "../shared/services/aethel-api.service";
-import { distinctUntilChanged, map } from "rxjs";
+import { Subject, distinctUntilChanged, map } from "rxjs";
 import {
     faChevronDown,
     faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { ActivatedRoute, Router } from "@angular/router";
 import { isNonNull } from "../shared/operators/IsNonNull";
+import { StatusService } from "../shared/services/status.service";
 
 @Component({
     selector: "pp-aethel",
@@ -31,14 +32,19 @@ export class AethelComponent implements OnInit {
         chevronDown: faChevronDown,
     };
 
+    status$ = new Subject();
+
     constructor(
         private apiService: AethelApiService,
         private destroyRef: DestroyRef,
         private router: Router,
         private route: ActivatedRoute,
+        private statusService: StatusService
     ) {}
 
     ngOnInit(): void {
+        this.statusService.get().subscribe(status => this.status$.next(status.aethel));
+
         this.apiService.output$
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe((response) => {

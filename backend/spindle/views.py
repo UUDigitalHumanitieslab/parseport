@@ -204,3 +204,17 @@ class SpindleView(View):
         return SpindleResponse(
             proof=serial_proof_to_json(serialize_proof(parsed.proof))
         ).json_response()
+
+
+def spindle_status():
+    try:
+        r = http.request(
+            method="GET",
+            url=settings.SPINDLE_URL + '/status/',
+            headers={"Content-Type": "application/json"},
+            timeout=1,
+            retries=False
+        )
+        return r.status < 400
+    except Exception:
+        return False

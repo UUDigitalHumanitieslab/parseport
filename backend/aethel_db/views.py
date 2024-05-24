@@ -1,22 +1,23 @@
 from dataclasses import asdict, dataclass, field
 from enum import Enum
 from typing import List, Optional
+
 from django.http import HttpRequest, JsonResponse
-from django.conf import settings
 from rest_framework import status
 from rest_framework.views import APIView
-from aethel import ProofBank
 from aethel.frontend import LexicalItem
 from spindle.utils import serialize_phrases_with_infix_notation
-from parseport.logger import logger
 from aethel_db.search import search, in_lemma, in_word
 from aethel.frontend import Sample
 
-DATASET_PATH = getattr(settings, "DATASET_PATH")
-try:
-    dataset = ProofBank.load_data(DATASET_PATH)
-except FileNotFoundError:
-    logger.critical(f"Æthel dataset not found.")
+from aethel.frontend import LexicalItem
+
+from .models import dataset
+from .search import search, in_lemma, in_word
+
+
+def aethel_status():
+    return dataset is not None
 
 
 @dataclass

@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { AethelApiService } from "../shared/services/aethel-api.service";
 import { map } from "rxjs";
 import { LexicalPhrase } from "../shared/types";
-import { filterOutNonNull } from "../shared/operators/IsNonNull";
+import { isNonNull } from "../shared/operators/IsNonNull";
 
 @Component({
     selector: "pp-sample",
@@ -15,7 +15,7 @@ export class SampleComponent {
     private sample$ = this.apiService.sampleResult$(this.sampleName);
     public sampleResult$ = this.sample$.pipe(
         map((response) => response?.result),
-        filterOutNonNull()
+        isNonNull()
     );
 
     constructor(

@@ -9,7 +9,7 @@ import {
     faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { ActivatedRoute, Router } from "@angular/router";
-import { filterOutNonNull } from "../shared/operators/IsNonNull";
+import { isNonNull } from "../shared/operators/IsNonNull";
 
 @Component({
     selector: "pp-aethel",
@@ -56,7 +56,7 @@ export class AethelComponent implements OnInit {
         this.route.queryParams
             .pipe(
                 map((queryParams) => queryParams["query"]),
-                filterOutNonNull(),
+                isNonNull(),
                 distinctUntilChanged(),
                 takeUntilDestroyed(this.destroyRef),
             )

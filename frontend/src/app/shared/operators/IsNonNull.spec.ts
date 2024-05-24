@@ -1,4 +1,4 @@
-import { filterOutNonNull } from "./IsNonNull";
+import { isNonNull } from "./IsNonNull";
 import { of } from "rxjs";
 
 interface TestInterface {
@@ -12,7 +12,7 @@ describe('isNonNull', () => {
         const source = of('hello', null, 123, undefined, true, testObject, testArray);
         const expected = ['hello', 123, true, testArray, testObject];
 
-        source.pipe(filterOutNonNull()).subscribe((value) => {
+        source.pipe(isNonNull()).subscribe((value) => {
             expect(expected.includes(value)).toBe(true);
         });
     });
@@ -23,7 +23,7 @@ describe('isNonNull', () => {
         }
         const input: TestInterface = { myTest: 'always succeeds' };
         const source = of(null, input, undefined);
-        source.pipe(filterOutNonNull()).subscribe((value) => {
+        source.pipe(isNonNull()).subscribe((value) => {
             // This should not compile if null/undefined are allowed to pass through.
             testFunction(value);
         });

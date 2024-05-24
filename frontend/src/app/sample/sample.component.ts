@@ -4,6 +4,8 @@ import { AethelApiService } from "../shared/services/aethel-api.service";
 import { map } from "rxjs";
 import { LexicalPhrase } from "../shared/types";
 import { isNonNull } from "../shared/operators/IsNonNull";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { Location } from "@angular/common";
 
 @Component({
     selector: "pp-sample",
@@ -18,10 +20,15 @@ export class SampleComponent {
         isNonNull()
     );
 
+    public icons = {
+        arrowLeft: faArrowLeft,
+    }
+
     constructor(
         private route: ActivatedRoute,
         private apiService: AethelApiService,
         private router: Router,
+        private location: Location
     ) {}
 
     public routeToAethel(items: LexicalPhrase["items"]): void {
@@ -36,5 +43,9 @@ export class SampleComponent {
     public showButton(items: LexicalPhrase["items"]): boolean {
         const combined = items.map((item) => item.word).join(" ");
         return combined.length > 2;
+    }
+
+    public goBack(): void {
+        this.location.back();
     }
 }

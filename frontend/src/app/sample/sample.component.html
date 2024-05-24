@@ -1,3 +1,8 @@
+<button class="button" (click)="goBack()" i18n>
+    <fa-icon [icon]="icons.arrowLeft" class="mr-2" />
+    Back to search
+</button>
+
 @if (sampleResult$ | async; as sample;) {
 <section class="hero">
     <div class="hero-body">

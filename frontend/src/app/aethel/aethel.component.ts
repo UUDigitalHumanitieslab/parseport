@@ -43,7 +43,9 @@ export class AethelComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        this.statusService.get().subscribe(status => this.status$.next(status.aethel));
+        this.statusService.get().pipe(
+            takeUntilDestroyed(this.destroyRef),
+        ).subscribe(status => this.status$.next(status.aethel));
 
         this.apiService.output$
             .pipe(takeUntilDestroyed(this.destroyRef))
@@ -87,15 +89,14 @@ export class AethelComponent implements OnInit {
     }
 
     private updateUrl(query: string): void {
+        // This does not actually refresh the page because it just adds parameters to the current route.
+        // It just updates the URL in the browser, triggering a new query.
         const url = this.router.createUrlTree([], { relativeTo: this.route, queryParams: { query } }).toString();
-        // This does not actually refresh the page. It just updates the URL in the browser, triggering a new query.
         this.router.navigateByUrl(url);
     }
 
     /**
      * Adds unique keys to the items in the array. This is needed for the table to keep track of the data and automatically collapse rows when the data changes.
-     * @param items - The array of AethelReturnItem objects.
-     * @returns An array of AethelReturnItem objects with unique keys.
      */
     private addUniqueKeys(
         items: AethelListReturnItem[],

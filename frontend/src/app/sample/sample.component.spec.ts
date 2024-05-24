@@ -14,6 +14,7 @@ import {
 } from "../shared/types";
 import { By } from "@angular/platform-browser";
 import { ProofPipe } from "../shared/pipes/proof.pipe";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 
 describe("SampleComponent", () => {
     let component: SampleComponent;
@@ -25,7 +26,8 @@ describe("SampleComponent", () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule, RouterModule.forRoot(routes)],
+            declarations: [SampleComponent, ProofPipe],
+            imports: [HttpClientTestingModule, FontAwesomeModule, RouterModule.forRoot(routes)],
             providers: [
                 {
                     provide: ActivatedRoute,
@@ -38,7 +40,6 @@ describe("SampleComponent", () => {
                     },
                 },
             ],
-            declarations: [SampleComponent, ProofPipe],
         }).compileComponents();
 
         fixture = TestBed.createComponent(SampleComponent);

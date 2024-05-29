@@ -12,7 +12,7 @@ def search(bank: Iterable[Sample], query: Callable[[Sample], bool]) -> Iterator[
 def in_lemma(query_string: str) -> Query:
     def f(sample: Sample) -> bool:
         return any(
-            query_string in item.lemma
+            query_string.lower() in item.lemma.lower()
             for phrase in sample.lexical_phrases
             for item in phrase.items
         )
@@ -23,7 +23,7 @@ def in_lemma(query_string: str) -> Query:
 def in_word(query_string: str) -> Query:
     def f(sample: Sample) -> bool:
         return any(
-            query_string in item.word
+            query_string.lower() in item.word.lower()
             for phrase in sample.lexical_phrases
             for item in phrase.items
         )

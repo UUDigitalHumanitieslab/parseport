@@ -5,7 +5,7 @@ import { ErrorHandlerService } from "../shared/services/error-handler.service";
 import { AlertService } from "../shared/services/alert.service";
 import { AlertType } from "../shared/components/alert/alert.component";
 import { faDownload, faCopy } from "@fortawesome/free-solid-svg-icons";
-import { LexicalPhrase, SpindleMode } from "../shared/services/types";
+import { LexicalPhrase, SpindleMode } from "../shared/types";
 import { SpindleApiService } from "../shared/services/spindle-api.service";
 import { Subject, filter, map, share, switchMap, takeUntil, timer } from "rxjs";
 import { StatusService } from "../shared/services/status.service";

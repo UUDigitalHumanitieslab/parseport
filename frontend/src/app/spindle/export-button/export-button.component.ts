@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { SpindleMode } from "src/app/shared/services/types";
+import { SpindleMode } from "src/app/shared/types";
 
 @Component({
     selector: "pp-export-button",
@@ -10,6 +10,6 @@ export class ExportButtonComponent {
     @Output() export = new EventEmitter<SpindleMode>();
     @Input() mode: SpindleMode | null = null;
     @Input() isLoading = false;
-    @Input() buttonText = $localize `Export`;
+    @Input() buttonText = $localize`Export`;
     @Input() textBelow: string | null = null;
 }

@@ -13,7 +13,7 @@ import {
     throttleTime,
 } from "rxjs";
 import { environment } from "src/environments/environment";
-import { AethelReturn } from "./types";
+import { AethelDetail, AethelListReturn } from "../types";
 import { ErrorHandlerService } from "./error-handler.service";
 import { ParsePortDataService } from "./ParsePortDataService";
 
@@ -21,13 +21,14 @@ import { ParsePortDataService } from "./ParsePortDataService";
     providedIn: "root",
 })
 export class AethelApiService
-    implements ParsePortDataService<string, AethelReturn>
+    implements ParsePortDataService<string, AethelListReturn>
 {
     input$ = new Subject<string>();
 
     throttledInput$ = this.input$.pipe(
         distinctUntilChanged(),
         throttleTime(300),
+        share(),
     );
 
     output$ = this.throttledInput$.pipe(
@@ -39,7 +40,7 @@ export class AethelApiService
             const params = new HttpParams().set("query", input);
 
             return this.http
-                .get<AethelReturn | null>(`${environment.apiUrl}aethel/`, {
+                .get<AethelListReturn | null>(`${environment.apiUrl}aethel/`, {
                     headers,
                     params,
                 })
@@ -51,7 +52,7 @@ export class AethelApiService
                         );
                         return of(null);
                     }),
-            );
+                );
         }),
         share(),
     );
@@ -65,4 +66,25 @@ export class AethelApiService
         private http: HttpClient,
         private errorHandler: ErrorHandlerService,
     ) {}
+
+    public sampleResult$(sampleName: string): Observable<AethelDetail | null> {
+        const headers = new HttpHeaders({
+            "Content-Type": "application/json",
+        });
+        const params = new HttpParams().set("sample-name", sampleName);
+        return this.http
+            .get<AethelDetail>(`${environment.apiUrl}aethel/sample`, {
+                headers,
+                params,
+            })
+            .pipe(
+                catchError((error) => {
+                    this.errorHandler.handleHttpError(
+                        error,
+                        $localize`An error occurred while handling your input.`,
+                    );
+                    return of(null);
+                }),
+            );
+    }
 }

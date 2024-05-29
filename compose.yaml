@@ -46,6 +46,8 @@ services:
             - "8000"
         volumes:
             - ./backend:/src
+            # mounting the server's data folder under /data
+            - ../:/data
             - pp-dj-logs:/logs
 
     dj-dev:

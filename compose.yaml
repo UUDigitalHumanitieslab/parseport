@@ -48,7 +48,7 @@ services:
             - ./backend:/src
             # mounting the server's data folder under /data
             - ../:/data
-            - pp-dj-logs:/logs
+            - ../../log/django:/logs
 
     dj-dev:
         <<: *dj-prod
@@ -70,7 +70,7 @@ services:
         expose:
             - "32768"
         volumes:
-            - pp-spindle-logs:/logs
+            - ../../log/spindle:/logs
 
     spindle-dev:
         <<: *spindle-prod
@@ -89,7 +89,7 @@ services:
         expose:
             - "32769"
         volumes:
-            - pp-latex-logs:/logs
+            - ../../log/latex:/logs
 
     latex-dev:
         <<: *latex-prod
@@ -100,8 +100,3 @@ services:
 networks:
     parseport:
         driver: bridge
-
-volumes:
-    pp-dj-logs:
-    pp-latex-logs:
-    pp-spindle-logs:
